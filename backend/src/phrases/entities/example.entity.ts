@@ -10,7 +10,11 @@ export class Example {
   @Column({ length: 2000 })
   value: string;
 
-  @ManyToOne(() => Phrase, phrase => phrase.examples)
-  @JoinColumn()
+  @ManyToOne(() => Phrase, phrase => phrase.examples, {
+    onDelete: 'CASCADE'
+  })
+  @JoinColumn({
+    name: 'phraseId'
+  })
   phrase: Phrase;
 }

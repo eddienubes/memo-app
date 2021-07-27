@@ -1,4 +1,5 @@
-import { IsArray, IsEmpty, IsString, Length, MaxLength } from 'class-validator'
+import { IsArray, IsEmpty, IsEnum, IsString, Length, MaxLength } from 'class-validator'
+import { PhraseType } from '../entities/phrase.entity';
 
 export class CreatePhraseDto {
   @Length(1, 1000)
@@ -15,4 +16,9 @@ export class CreatePhraseDto {
   @IsString({ each: true })
   @IsArray()
   examples: string[];
+
+  @IsEnum(PhraseType, {
+    message: `type field can only contain these values: ${Object.values(PhraseType)}`
+  })
+  type: PhraseType
 }

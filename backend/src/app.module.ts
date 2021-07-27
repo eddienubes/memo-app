@@ -6,6 +6,8 @@ import serverConfig from './config/server-config';
 import databaseConfig from './config/database-config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PhrasesModule } from './phrases/phrases.module';
+import { UsersModule } from './users/users.module';
+import { TestsModule } from './tests/tests.module';
 
 @Module({
   imports: [
@@ -17,7 +19,9 @@ import { PhrasesModule } from './phrases/phrases.module';
     ConfigModule.forRoot({
       load: [serverConfig, databaseConfig]
     }),
-    PhrasesModule
+    PhrasesModule,
+    UsersModule,
+    TestsModule
   ],
   controllers: [AppController],
   providers: [AppService],
