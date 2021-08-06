@@ -5,9 +5,10 @@ import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import serverConfig from './config/server-config';
 import databaseConfig from './config/database-config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PhrasesModule } from './phrases/phrases.module';
-import { UsersModule } from './users/users.module';
-import { TestsModule } from './tests/tests.module';
+import { PhraseModule } from './phrase/phrase.module';
+import { UserModule } from './user/user.module';
+import { TestModule } from './test/test.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,9 +20,10 @@ import { TestsModule } from './tests/tests.module';
     ConfigModule.forRoot({
       load: [serverConfig, databaseConfig]
     }),
-    PhrasesModule,
-    UsersModule,
-    TestsModule
+    PhraseModule,
+    UserModule,
+    TestModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
