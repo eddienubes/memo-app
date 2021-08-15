@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Test } from './entities/test.entity';
 import { Repository } from 'typeorm';
@@ -23,12 +28,17 @@ export class TestService {
   ) {
   }
 
-  async findAll(): Promise<Test[]> {
-
-    return [];
+  async findAll(userId: number): Promise<Test[]> {
+    const tests = await this.testsRepository.find({
+      relations: ['phrase', 'answers', 'phrase.definition', 'answers.definition'],
+      where: {
+        phrase: { userId }
+      }
+    });
+    return tests;
   }
 
-  async findOne(id: number): Promise<Test> {
+  async findById(id: number, userId: number): Promise<Test> {
     const test = await this.testsRepository.findOne(id, {
       relations: ['phrase', 'answers', 'phrase.definition', 'answers.definition']
     });
@@ -37,15 +47,19 @@ export class TestService {
       throw new NotFoundException(`Test with id ${id} has not been found!`);
     }
 
+    if (test.phrase.userId !== userId) {
+      throw new UnauthorizedException(`You are not allowed to manage this test!`);
+    }
+
     return test;
   }
 
-  async createTests(createTestDto: CreateTestQueryDto): Promise<Test[]> {
+  async createTests(createTestDto: CreateTestQueryDto, userId: number): Promise<Test[]> {
     const lowRatedPhrases = await this.phrasesService.getLowestRatedPhrasesByType(createTestDto.type);
 
     let phrases: Phrase[];
     if (lowRatedPhrases.length < this.MAX_TESTS_AMOUNT) {
-      phrases = await this.phrasesService.findAll({ limit: this.MAX_TESTS_AMOUNT });
+      phrases = await this.phrasesService.findAll({ limit: this.MAX_TESTS_AMOUNT }, userId);
     }
 
     if (phrases.length < this.MAX_TESTS_AMOUNT) {

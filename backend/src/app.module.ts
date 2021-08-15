@@ -10,8 +10,8 @@ import { UserModule } from './user/user.module';
 import { TestModule } from './test/test.module';
 import { AuthModule } from './auth/auth.module';
 import { authConfig, authConfigSchema } from './auth/config/auth-config';
-import { PhraseService } from './example/phrase/phrase.service';
 import { ExampleModule } from './example/example.module';
+import { DefinitionModule } from './definition/definition.module';
 
 @Module({
   imports: [
@@ -35,10 +35,11 @@ import { ExampleModule } from './example/example.module';
     UserModule,
     TestModule,
     AuthModule,
-    ExampleModule
+    ExampleModule,
+    DefinitionModule
   ],
   controllers: [AppController],
-  providers: [AppService, PhraseService],
+  providers: [AppService],
 })
 export class AppModule {
 }

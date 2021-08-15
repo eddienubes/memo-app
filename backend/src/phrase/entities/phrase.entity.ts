@@ -1,7 +1,17 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Example } from './example.entity';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Unique
+} from 'typeorm';
+import { Example } from '../../example/entities/example.entity';
 import { User } from '../../user/entities/user.entity';
-import { Definition } from './definition.entity';
+import { Definition } from '../../definition/entities/definition.entity';
 
 export enum PhraseType {
   NOUN = 'NOUN',
@@ -12,13 +22,13 @@ export enum PhraseType {
 }
 
 @Entity('phrase')
+@Unique(['value', 'type'])
 export class Phrase {
-
   @PrimaryGeneratedColumn()
   id: number;
 
   @Index()
-  @Column({ length: 1000, unique: true })
+  @Column({ length: 1000, unique: false })
   value: string;
 
   @Column({

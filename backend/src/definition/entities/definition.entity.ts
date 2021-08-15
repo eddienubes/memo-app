@@ -1,5 +1,5 @@
 import { PrimaryGeneratedColumn, Column, Index, OneToOne, JoinColumn, Entity } from 'typeorm';
-import { Phrase } from './phrase.entity';
+import { Phrase } from '../../phrase/entities/phrase.entity';
 
 @Entity('definition')
 export class Definition {

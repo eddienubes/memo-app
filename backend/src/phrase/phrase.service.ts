@@ -9,14 +9,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Phrase, PhraseType } from './entities/phrase.entity';
 import { Not, Repository } from 'typeorm';
 import { CreatePhraseDto } from './dtos/create-phrase.dto';
-import { Example } from './entities/example.entity';
+import { Example } from '../example/entities/example.entity';
 import { PaginationQueryDto } from './dtos/pagination-query.dto';
 import { UpdatePhraseDto } from './dtos/update-phrase.dto';
-import { UpdateExampleDto } from './dtos/update-example.dto';
-import { CreateExampleDto } from './dtos/create-example.dto';
+import { UpdateExampleDto } from '../example/dtos/update-example.dto';
+import { CreateExampleDto } from '../example/dtos/create-example.dto';
 import { Choice } from '../test/entities/choice.entitiy';
 import { Answer } from '../test/entities/answer.entity';
-import { Definition } from './entities/definition.entity';
+import { Definition } from '../definition/entities/definition.entity';
+import { ExampleService } from '../example/example.service';
+import { DefinitionService } from '../definition/definition.service';
 
 @Injectable()
 export class PhraseService {
@@ -25,10 +27,8 @@ export class PhraseService {
   constructor(
     @InjectRepository(Phrase)
     private readonly phraseRepository: Repository<Phrase>,
-    @InjectRepository(Example)
-    private readonly exampleRepository: Repository<Example>,
-    @InjectRepository(Definition)
-    private readonly definitionRepository: Repository<Definition>
+    private readonly exampleService: ExampleService,
+    private readonly definitionService: DefinitionService
   ) {
   }
 
@@ -42,25 +42,24 @@ export class PhraseService {
     });
   }
 
-  public async create(createPhraseDto: CreatePhraseDto, userId: number): Promise<Phrase> {
-    const existingPhrase = await this.phraseRepository.findOne({ value: createPhraseDto.phrase });
 
+  public async createExample(phraseId: number, createExampleDto: CreateExampleDto, userId: number) {
+    const existingPhrase = await this.findById(phraseId, userId);
+    return this.exampleService.createExample(existingPhrase, createExampleDto);
+  }
+
+  public async create(createPhraseDto: CreatePhraseDto, userId: number): Promise<Phrase> {
+    const existingPhrase = await this.phraseRepository.findOne({
+      value: createPhraseDto.phrase,
+      type: createPhraseDto.type
+    });
+    console.log(existingPhrase);
     if (existingPhrase) {
       throw new ConflictException(`Phrase ${createPhraseDto.phrase} already exists!`);
     }
 
-    const examples = createPhraseDto.examples.map(example => {
-      const newExample = new Example();
-      newExample.value = example;
-      return newExample;
-    });
-
-    await this.exampleRepository.save(examples);
-
-    const definition = new Definition();
-    definition.value = createPhraseDto.definition;
-
-    await this.definitionRepository.save(definition);
+    const examples = await this.exampleService.createWithoutPhrase(createPhraseDto.examples);
+    const definition = await this.definitionService.createWithoutPhrase(createPhraseDto.definition);
 
     const phrase = new Phrase();
     phrase.value = createPhraseDto.phrase;
@@ -69,10 +68,7 @@ export class PhraseService {
     phrase.definition = definition;
     phrase.userId = userId;
 
-    await this.phraseRepository.save(phrase);
-
-
-    return phrase;
+    return this.phraseRepository.save(phrase);
   }
 
   public async findById(id: number, userId?: number): Promise<Phrase> {
@@ -89,7 +85,7 @@ export class PhraseService {
     }
 
     if (phrase.userId !== userId) {
-      throw new UnauthorizedException(`You are not allowed to delete phrases that do not belong to you!`);
+      throw new UnauthorizedException(`You are not allowed to manage this phrase!`);
     }
 
     return phrase;
@@ -104,59 +100,16 @@ export class PhraseService {
   public async updatePhrase(id: number, updatePhraseDtp: UpdatePhraseDto, userId: number): Promise<Phrase> {
     const phrase = await this.findById(id, userId)
 
-    const definition = await this.definitionRepository.preload({
+    await this.definitionService.update({
       id: phrase.definition.id,
       value: updatePhraseDtp.definition
     });
-
-    if (!definition) {
-      throw new NotFoundException(`Cannot update definition, that does not exists for such phrase`);
-    }
-
-    await this.definitionRepository.save(definition);
 
     return this.phraseRepository.save({
       ...phrase,
       value: updatePhraseDtp.phrase,
       type: updatePhraseDtp.type
     });
-  }
-
-  public async updateExample(exampleId: number, updateExampleDto: UpdateExampleDto) {
-    const existingExample = await this.exampleRepository.preload({
-      id: exampleId,
-      value: updateExampleDto.example,
-    });
-    // TODO: Rework this method
-
-    if (!existingExample) {
-      throw new NotFoundException(`Example with id ${exampleId} has not been found!`);
-    }
-
-    return this.exampleRepository.save(existingExample);
-  }
-
-  public async createExample(phraseId: number, createExampleDto: CreateExampleDto) {
-    const existingPhrase = await this.phraseRepository.findOne(phraseId);
-
-    if (!existingPhrase) {
-      throw new NotFoundException(`Phrase with id ${phraseId} has not been found!`);
-    }
-
-    const example = new Example();
-    example.value = createExampleDto.example;
-    example.phrase = existingPhrase;
-
-    return this.exampleRepository.save(example);
-  }
-
-  async deleteExample(id: number) {
-    const example = await this.exampleRepository.findOne(id);
-    if (!example) {
-      throw new NotFoundException(`Example with id ${id} has not been found!`);
-    }
-
-    return this.exampleRepository.remove(example);
   }
 
   async getLowestRatedPhrasesByType(type: PhraseType) {
@@ -226,5 +179,4 @@ export class PhraseService {
     // console.log(phrase);
     return phrases;
   }
-
 }

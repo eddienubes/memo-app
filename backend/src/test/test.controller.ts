@@ -1,8 +1,9 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { CreateTestQueryDto } from './dtos/create-test-query.dto';
 import { TestService } from './test.service';
 import { TestRO } from './interfaces/test.interface';
 import { JwtAuthenticationGuard } from '../auth/guards/jwt-authentication.guard';
+import { IRequestWithUser } from '../auth/interfaces/request-with-user.interface';
 
 @Controller('test')
 export class TestController {
@@ -12,15 +13,21 @@ export class TestController {
   }
 
   @UseGuards(JwtAuthenticationGuard)
+  @Get()
+  async findAll(@Req() req: IRequestWithUser) {
+    return this.testsService.findAll(req.user.id);
+  }
+
+  @UseGuards(JwtAuthenticationGuard)
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.testsService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: IRequestWithUser) {
+    return this.testsService.findById(id, req.user.id);
   }
 
   @UseGuards(JwtAuthenticationGuard)
   @Post()
-  async createTests(@Query() createTestDto: CreateTestQueryDto): Promise<TestRO[]> {
-    const rawTests = await this.testsService.createTests(createTestDto);
+  async createTests(@Query() createTestDto: CreateTestQueryDto, @Req() req: IRequestWithUser): Promise<TestRO[]> {
+    const rawTests = await this.testsService.createTests(createTestDto, req.user.id);
 
     return rawTests.map(
       test => ({

@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Test } from './test.entity';
-import { Definition } from '../../phrase/entities/definition.entity';
+import { Definition } from '../../definition/entities/definition.entity';
 
 @Entity('answer')
 export class Answer {
