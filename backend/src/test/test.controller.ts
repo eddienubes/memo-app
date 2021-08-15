@@ -1,7 +1,8 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { CreateTestQueryDto } from './dtos/create-test-query.dto';
 import { TestService } from './test.service';
-import { TestRO } from './test.interface';
+import { TestRO } from './interfaces/test.interface';
+import { JwtAuthenticationGuard } from '../auth/guards/jwt-authentication.guard';
 
 @Controller('test')
 export class TestController {
@@ -10,13 +11,13 @@ export class TestController {
   ) {
   }
 
+  @UseGuards(JwtAuthenticationGuard)
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.testsService.findOne(id);
   }
 
-
-
+  @UseGuards(JwtAuthenticationGuard)
   @Post()
   async createTests(@Query() createTestDto: CreateTestQueryDto): Promise<TestRO[]> {
     const rawTests = await this.testsService.createTests(createTestDto);

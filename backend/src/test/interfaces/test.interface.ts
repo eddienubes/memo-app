@@ -1,4 +1,4 @@
-import { PhraseType } from '../phrase/entities/phrase.entity';
+import { PhraseType } from '../../phrase/entities/phrase.entity';
 
 class PhraseData {
   id: number;

@@ -34,6 +34,9 @@ export class Phrase {
   @OneToMany(() => Example, example => example.phrase)
   examples: Example[]
 
+  @Column({ nullable: false })
+  userId: number;
+
   @ManyToOne(() => User, user => user.phrases, {
     onDelete: 'CASCADE',
   })

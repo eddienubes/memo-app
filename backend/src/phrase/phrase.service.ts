@@ -3,7 +3,7 @@ import {
   ConflictException,
   Injectable,
   Logger,
-  NotFoundException
+  NotFoundException, UnauthorizedException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Phrase, PhraseType } from './entities/phrase.entity';
@@ -22,9 +22,6 @@ import { Definition } from './entities/definition.entity';
 export class PhraseService {
   private readonly MIN_PHRASES_AMOUNT = 5;
 
-  private readonly logger: Logger = new Logger('VideoChatGateway');
-
-
   constructor(
     @InjectRepository(Phrase)
     private readonly phraseRepository: Repository<Phrase>,
@@ -35,14 +32,17 @@ export class PhraseService {
   ) {
   }
 
-  findAll(paginationDto: PaginationQueryDto, select: (keyof Phrase)[] = []): Promise<Phrase[]> {
+  public findAll(paginationDto: PaginationQueryDto, userId: number): Promise<Phrase[]> {
     return this.phraseRepository.find({
       take: paginationDto.limit,
-      relations: ['examples', 'definition']
+      relations: ['examples', 'definition'],
+      where: {
+        userId
+      }
     });
   }
 
-  async create(createPhraseDto: CreatePhraseDto): Promise<Phrase> {
+  public async create(createPhraseDto: CreatePhraseDto, userId: number): Promise<Phrase> {
     const existingPhrase = await this.phraseRepository.findOne({ value: createPhraseDto.phrase });
 
     if (existingPhrase) {
@@ -67,6 +67,7 @@ export class PhraseService {
     phrase.type = createPhraseDto.type;
     phrase.examples = examples;
     phrase.definition = definition;
+    phrase.userId = userId;
 
     await this.phraseRepository.save(phrase);
 
@@ -74,7 +75,7 @@ export class PhraseService {
     return phrase;
   }
 
-  async findById(id: number): Promise<Phrase> {
+  public async findById(id: number, userId?: number): Promise<Phrase> {
     const phrase = await this.phraseRepository.findOne(id, {
       relations: ['examples', 'definition']
     });
@@ -83,23 +84,25 @@ export class PhraseService {
       throw new NotFoundException(`Phrase with id ${id} does not exist!`);
     }
 
+    if (!userId) {
+      return phrase;
+    }
+
+    if (phrase.userId !== userId) {
+      throw new UnauthorizedException(`You are not allowed to delete phrases that do not belong to you!`);
+    }
+
     return phrase;
   }
 
-  async remove(id: number): Promise<Phrase> {
-    const phrase = await this.findById(id);
+  public async remove(id: number, userId: number): Promise<Phrase> {
+    const phrase = await this.findById(id, userId);
     return this.phraseRepository.remove(phrase);
   }
 
 
-  async updatePhrase(id: number, updatePhraseDtp: UpdatePhraseDto): Promise<Phrase> {
-    const phrase = await this.phraseRepository.findOne(id, {
-      relations: ['definition', 'examples']
-    });
-
-    if (!phrase) {
-      throw new NotFoundException(`Phrase with id ${id} does not exist!`);
-    }
+  public async updatePhrase(id: number, updatePhraseDtp: UpdatePhraseDto, userId: number): Promise<Phrase> {
+    const phrase = await this.findById(id, userId)
 
     const definition = await this.definitionRepository.preload({
       id: phrase.definition.id,
@@ -119,12 +122,12 @@ export class PhraseService {
     });
   }
 
-  async updateExample(exampleId: number, updateExampleDto: UpdateExampleDto) {
+  public async updateExample(exampleId: number, updateExampleDto: UpdateExampleDto) {
     const existingExample = await this.exampleRepository.preload({
       id: exampleId,
-      value: updateExampleDto.example
+      value: updateExampleDto.example,
     });
-
+    // TODO: Rework this method
 
     if (!existingExample) {
       throw new NotFoundException(`Example with id ${exampleId} has not been found!`);
@@ -133,7 +136,7 @@ export class PhraseService {
     return this.exampleRepository.save(existingExample);
   }
 
-  async createExample(phraseId: number, createExampleDto: CreateExampleDto) {
+  public async createExample(phraseId: number, createExampleDto: CreateExampleDto) {
     const existingPhrase = await this.phraseRepository.findOne(phraseId);
 
     if (!existingPhrase) {

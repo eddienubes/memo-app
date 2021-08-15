@@ -9,12 +9,22 @@ export class UserService {
 
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User>
+    private readonly userRepository: Repository<User>
   ) {
   }
 
+  public async getById(id: number): Promise<User> {
+    const user = await this.userRepository.findOne(id);
+
+    if (!user) {
+      throw new NotFoundException(`User with ${id} has not been found`);
+    }
+
+    return user;
+  }
+
   public async getByEmail(email: string): Promise<User> {
-    const user = await this.usersRepository.findOne({ email });
+    const user = await this.userRepository.findOne({ email });
 
     if (!user) {
       throw new NotFoundException(`User with email ${email} has not been found`);
@@ -24,19 +34,19 @@ export class UserService {
   }
 
 
-  public async create(createUserDto: CreateUserDto) {
-    const existingUser = await this.usersRepository.findOne({
+  public async create(createUserDto: CreateUserDto): Promise<User> {
+    const existingUser = await this.userRepository.findOne({
       email: createUserDto.email
     });
 
     if (existingUser) {
-      throw new BadRequestException(`User with such email already exist in the database`);
+      throw new BadRequestException(`User with such email already exists!`);
     }
-    const newUser = await this.usersRepository.create({
+    const newUser = await this.userRepository.create({
       ...createUserDto,
     });
 
-    return this.usersRepository.save(newUser);
+    return this.userRepository.save(newUser);
   }
 
 }

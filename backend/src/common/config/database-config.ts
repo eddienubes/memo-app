@@ -1,7 +1,10 @@
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import * as Joi from '@hapi/joi';
 
-export default registerAs('postgres-database', () => {
+export const DATABASE_CONFIG_TOKEN = 'postgres-database';
+
+export const databaseConfig = registerAs(DATABASE_CONFIG_TOKEN, () => {
   const config: TypeOrmModuleOptions = {
     type: 'postgres',
     host: process.env.DATABASE_HOST,
@@ -12,6 +15,13 @@ export default registerAs('postgres-database', () => {
     synchronize: true,
     autoLoadEntities: true
   }
-
   return config;
+});
+
+export const databaseConfigSchema = Joi.object({
+  DATABASE_HOST: Joi.string().required(),
+  DATABASE_PORT: Joi.number().required(),
+  DATABASE_USER: Joi.string().required(),
+  DATABASE_PASSWORD: Joi.string().required(),
+  DATABASE_NAME: Joi.string().required()
 });
