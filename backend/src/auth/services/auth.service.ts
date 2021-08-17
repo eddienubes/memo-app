@@ -1,12 +1,12 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { UserService } from '../user/user.service';
+import { UserService } from '../../user/services/user.service';
 import * as bcrypt from 'bcrypt';
-import { RegisterDto } from './dtos/register.dto';
-import { User } from '../user/entities/user.entity';
+import { RegisterDto } from '../dtos/register.dto';
+import { User } from '../../user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService, ConfigType } from '@nestjs/config';
-import { authConfig } from './config/auth-config';
-import { ITokenPayload } from './interfaces/token-payload.interface';
+import { authConfig } from '../config/auth-config';
+import { ITokenPayload } from '../interfaces/token-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +53,7 @@ export class AuthService {
       user.password = undefined;
       return user;
     } catch (e) {
-      throw new BadRequestException(`Email or password is incorrect!`);
+      throw new BadRequestException(`Email or password are incorrect!`);
     }
   }
 

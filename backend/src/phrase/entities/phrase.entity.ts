@@ -12,6 +12,7 @@ import {
 import { Example } from '../../example/entities/example.entity';
 import { User } from '../../user/entities/user.entity';
 import { Definition } from '../../definition/entities/definition.entity';
+import { Exclude } from 'class-transformer';
 
 export enum PhraseType {
   NOUN = 'NOUN',
@@ -22,13 +23,13 @@ export enum PhraseType {
 }
 
 @Entity('phrase')
-@Unique(['value', 'type'])
+@Unique(['value', 'type', 'user'])
 export class Phrase {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Index()
-  @Column({ length: 1000, unique: false })
+  @Column({ length: 1000 })
   value: string;
 
   @Column({
@@ -38,9 +39,11 @@ export class Phrase {
   })
   type: PhraseType
 
+  @Exclude()
   @OneToOne(() => Definition, definition => definition.phrase)
   definition: Definition;
 
+  @Exclude()
   @OneToMany(() => Example, example => example.phrase)
   examples: Example[]
 

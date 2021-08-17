@@ -6,19 +6,19 @@ import {
   NotFoundException, UnauthorizedException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Phrase, PhraseType } from './entities/phrase.entity';
+import { Phrase, PhraseType } from '../entities/phrase.entity';
 import { Not, Repository } from 'typeorm';
-import { CreatePhraseDto } from './dtos/create-phrase.dto';
-import { Example } from '../example/entities/example.entity';
-import { PaginationQueryDto } from './dtos/pagination-query.dto';
-import { UpdatePhraseDto } from './dtos/update-phrase.dto';
-import { UpdateExampleDto } from '../example/dtos/update-example.dto';
-import { CreateExampleDto } from '../example/dtos/create-example.dto';
-import { Choice } from '../test/entities/choice.entitiy';
-import { Answer } from '../test/entities/answer.entity';
-import { Definition } from '../definition/entities/definition.entity';
-import { ExampleService } from '../example/example.service';
-import { DefinitionService } from '../definition/definition.service';
+import { CreatePhraseDto } from '../dtos/create-phrase.dto';
+import { Example } from '../../example/entities/example.entity';
+import { PaginationQueryDto } from '../dtos/pagination-query.dto';
+import { UpdatePhraseDto } from '../dtos/update-phrase.dto';
+import { UpdateExampleDto } from '../../example/dtos/update-example.dto';
+import { CreateExampleDto } from '../../example/dtos/create-example.dto';
+import { Choice } from '../../test/entities/choice.entitiy';
+import { Answer } from '../../test/entities/answer.entity';
+import { Definition } from '../../definition/entities/definition.entity';
+import { ExampleService } from '../../example/services/example.service';
+import { DefinitionService } from '../../definition/services/definition.service';
 
 @Injectable()
 export class PhraseService {
@@ -42,7 +42,6 @@ export class PhraseService {
     });
   }
 
-
   public async createExample(phraseId: number, createExampleDto: CreateExampleDto, userId: number) {
     const existingPhrase = await this.findById(phraseId, userId);
     return this.exampleService.createExample(existingPhrase, createExampleDto);
@@ -51,9 +50,10 @@ export class PhraseService {
   public async create(createPhraseDto: CreatePhraseDto, userId: number): Promise<Phrase> {
     const existingPhrase = await this.phraseRepository.findOne({
       value: createPhraseDto.phrase,
-      type: createPhraseDto.type
+      type: createPhraseDto.type,
+      userId
     });
-    console.log(existingPhrase);
+
     if (existingPhrase) {
       throw new ConflictException(`Phrase ${createPhraseDto.phrase} already exists!`);
     }
@@ -100,16 +100,21 @@ export class PhraseService {
   public async updatePhrase(id: number, updatePhraseDtp: UpdatePhraseDto, userId: number): Promise<Phrase> {
     const phrase = await this.findById(id, userId)
 
-    await this.definitionService.update({
+    const definition = await this.definitionService.update({
       id: phrase.definition.id,
       value: updatePhraseDtp.definition
     });
 
-    return this.phraseRepository.save({
+    const updatedPhrase = await this.phraseRepository.save({
       ...phrase,
       value: updatePhraseDtp.phrase,
       type: updatePhraseDtp.type
     });
+
+    return {
+      ...updatedPhrase,
+      definition
+    }
   }
 
   async getLowestRatedPhrasesByType(type: PhraseType) {

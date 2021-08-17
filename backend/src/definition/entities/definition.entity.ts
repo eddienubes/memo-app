@@ -7,7 +7,7 @@ export class Definition {
   id: number;
 
   @Index()
-  @Column({ length: 2000, unique: true })
+  @Column({ length: 2000 })
   value: string;
 
   @OneToOne(() => Phrase, phrase => phrase.definition, {

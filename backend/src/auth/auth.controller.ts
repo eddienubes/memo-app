@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LocalAuthenticationGuard } from './guards/local-authentication.guard';
 import { IRequestWithUser } from './interfaces/request-with-user.interface';

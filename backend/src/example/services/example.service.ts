@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { DeepPartial, Repository } from 'typeorm';
-import { Example } from './entities/example.entity';
+import { Example } from '../entities/example.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateExampleDto } from './dtos/create-example.dto';
-import { PhraseService } from '../phrase/phrase.service';
-import { UpdateExampleDto } from './dtos/update-example.dto';
-import { Phrase } from '../phrase/entities/phrase.entity';
+import { CreateExampleDto } from '../dtos/create-example.dto';
+import { PhraseService } from '../../phrase/services/phrase.service';
+import { UpdateExampleDto } from '../dtos/update-example.dto';
+import { Phrase } from '../../phrase/entities/phrase.entity';
 
 @Injectable()
 export class ExampleService {

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { CreatePhraseDto } from './dtos/create-phrase.dto';
-import { PhraseService } from './phrase.service';
+import { PhraseService } from './services/phrase.service';
 import { PaginationQueryDto } from './dtos/pagination-query.dto';
 import { RemovePhraseDto } from './dtos/remove-phrase.dto';
 import { UpdatePhraseDto } from './dtos/update-phrase.dto';
@@ -41,7 +41,7 @@ export class PhraseController {
   }
 
   @UseGuards(JwtAuthenticationGuard)
-  @Post('phrase/:pid')
+  @Post(':pid/example')
   createExample(@Param('pid', ParseIntPipe) phraseId: number, @Body() createExampleDto: CreateExampleDto, @Req() req: IRequestWithUser) {
     return this.phrasesService.createExample(phraseId, createExampleDto, req.user.id);
   }

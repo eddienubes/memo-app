@@ -1,6 +1,6 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Test } from './test.entity';
-import { Definition } from '../../definition/entities/definition.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('answer')
 export class Answer {
@@ -8,14 +8,16 @@ export class Answer {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Exclude()
   @Column({ default: false })
   valid: boolean;
 
-  @ManyToOne(() => Definition)
-  @JoinColumn({
-    name: 'definitionId',
-  })
-  definition: Definition;
+  @Column()
+  definition: string;
+
+  @Exclude()
+  @Column({ nullable: true })
+  testId: number;
 
   @ManyToOne(() => Test, test => test.answers, {
     onDelete: 'CASCADE'

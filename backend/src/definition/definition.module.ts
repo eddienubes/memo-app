@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DefinitionController } from './definition.controller';
-import { DefinitionService } from './definition.service';
+import { DefinitionService } from './services/definition.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Definition } from './entities/definition.entity';
 

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthenticationGuard } from '../auth/guards/jwt-authentication.guard';
-import { ExampleService } from './example.service';
+import { ExampleService } from './services/example.service';
 import { UpdateExampleDto } from './dtos/update-example.dto';
 import { CreateExampleDto } from './dtos/create-example.dto';
 import { IRequestWithUser } from '../auth/interfaces/request-with-user.interface';
