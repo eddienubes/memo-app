@@ -136,7 +136,7 @@ export class PhraseService {
         return `id IN ` + subQuery;
       })
       .getMany();
-
+    console.log(phrases);
     return phrases;
   }
 

@@ -7,6 +7,7 @@ import { Test } from './entities/test.entity';
 import { Choice } from './entities/choice.entitiy';
 import { PhraseModule } from '../phrase/phrase.module';
 import { AnswerService } from './services/answer.service';
+import { ChoiceService } from './services/choice.service';
 
 @Module({
   imports: [
@@ -14,6 +15,6 @@ import { AnswerService } from './services/answer.service';
     PhraseModule
   ],
   controllers: [TestController],
-  providers: [TestService, AnswerService]
+  providers: [TestService, AnswerService, ChoiceService]
 })
 export class TestModule {}

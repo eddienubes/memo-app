@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseBoolPipe,
   ParseIntPipe,
   Post,
   Query,
@@ -26,19 +25,17 @@ export class TestController {
   ) {
   }
 
-  // TODO: Add boolean validation pipe
   @UseGuards(JwtAuthenticationGuard)
   @UseInterceptors(TestInterceptor)
   @Get()
-  async findAll(@Req() req: IRequestWithUser, @Query() dto: FindTestsQueryDto): Promise<Test[]> { // TODO: Remove sensitive data
+  async findAll(@Req() req: IRequestWithUser, @Query() dto: FindTestsQueryDto): Promise<Test[]> {
     return this.testsService.findAll(req.user.id, dto.done);
   }
 
   @UseGuards(JwtAuthenticationGuard)
   @UseInterceptors(TestInterceptor)
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: IRequestWithUser): Promise<Test> { // TODO: Remove sensitive data
-
+  async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: IRequestWithUser): Promise<Test> {
     return this.testsService.findById(id, req.user.id);
   }
 
@@ -52,7 +49,7 @@ export class TestController {
   @UseGuards(JwtAuthenticationGuard)
   @Post(':tid/answer/:aid')
   answerToTest(
-    @Param('tid', ParseIntPipe) testId: number,
+    @Param('tid', ParseIntPipe) testId: number, // TODO: Restrict maximum number client can send as an id
     @Param('aid', ParseIntPipe) answerId: number,
     @Req() req: IRequestWithUser
   ): Promise<Answer> {

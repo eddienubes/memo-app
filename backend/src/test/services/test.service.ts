@@ -14,6 +14,7 @@ import { Phrase } from '../../phrase/entities/phrase.entity';
 import { PhraseService } from '../../phrase/services/phrase.service';
 import { AnswerService } from './answer.service';
 import { CreateAnswerDto } from '../dtos/create-answer.dto';
+import { ChoiceService } from './choice.service';
 
 @Injectable()
 export class TestService {
@@ -22,10 +23,9 @@ export class TestService {
   constructor(
     @InjectRepository(Test)
     private readonly testRepository: Repository<Test>,
-    @InjectRepository(Choice)
-    private readonly choiceRepository: Repository<Choice>,
     private readonly phraseService: PhraseService,
-    private readonly answerService: AnswerService
+    private readonly answerService: AnswerService,
+    private readonly choiceService: ChoiceService
   ) {
   }
 
@@ -107,14 +107,24 @@ export class TestService {
   public async answerToTest(testId: number, answerId: number, userId: number): Promise<Answer> {
     const answer = await this.answerService.findAnswerById(testId, answerId, userId);
 
+    const test = await this.findById(testId, userId);
+
+    await this.choiceService.create({
+      userId,
+      testId,
+      phraseId: test.phrase.id,
+      answerId: answer.id
+    });
+
     if (!answer.valid) {
       throw new BadRequestException(`Incorrect answer!`);
     }
 
-    const test = await this.testRepository.preload({
-      id: testId,
-      done: true
-    });
+    if (test.done) {
+      throw new BadRequestException(`Test has already been completed!`);
+    }
+
+    test.done = true;
 
     await this.testRepository.save(test);
 

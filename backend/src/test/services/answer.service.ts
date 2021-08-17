@@ -21,6 +21,7 @@ export class AnswerService {
   public async findAnswerById(testId: number, answerId: number, userId?: number): Promise<Answer> {
     const answer = await this.answerRepository.findOne({
       id: answerId,
+      testId
     }, {
       relations: ['test', 'test.phrase'],
     });
