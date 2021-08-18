@@ -1,6 +1,7 @@
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Phrase } from '../../phrase/entities/phrase.entity';
 import { Choice } from '../../test/entities/choice.entitiy';
+import { Exclude } from 'class-transformer';
 
 
 @Entity('user')
@@ -17,6 +18,7 @@ export class User {
   @Column({ unique: true })
   username: string;
 
+  @Exclude()
   @Column({ length: 2000 })
   password: string;
 

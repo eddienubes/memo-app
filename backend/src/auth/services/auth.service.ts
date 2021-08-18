@@ -35,10 +35,6 @@ export class AuthService {
       password: hashedPassword
     });
 
-    // TODO: Replace method of cleaning the password
-
-    user.password = undefined;
-
     return user;
   }
 
