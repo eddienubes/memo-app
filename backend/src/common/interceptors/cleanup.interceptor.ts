@@ -4,12 +4,14 @@ import { map } from 'rxjs/operators';
 import { classToPlain } from 'class-transformer';
 
 @Injectable()
-export class TestInterceptor implements NestInterceptor {
+export class CleanupInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next
       .handle()
       .pipe(
-        map((data) => classToPlain(data))
-      );
+        map(
+          data => classToPlain(data)
+        )
+      )
   }
 }
