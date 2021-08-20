@@ -32,16 +32,16 @@ export class AuthController {
     return user;
   }
 
-
+  @HttpCode(200)
   @UseInterceptors(CleanupInterceptor)
-  // @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAuthenticationGuard)
   @Post('signout')
-  signOut(@Req() req: IRequestWithUser, @Res({ passthrough: true }) res: Response): Response {
+  signOut(@Req() req: IRequestWithUser, @Res({ passthrough: true }) res: Response): void {
     res.setHeader('Set-Cookie', this.authService.getCookieForSignOut());
-    return res.sendStatus(200);
+    return;
   }
 
-  // @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAuthenticationGuard)
   @Get()
   authenticate(@Req() req: IRequestWithUser) {
     const { user } = req;
