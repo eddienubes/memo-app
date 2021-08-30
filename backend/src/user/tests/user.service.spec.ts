@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
+import { UserService } from '../services/user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 
@@ -39,7 +39,7 @@ describe('UserService', () => {
       });
 
       it('should return the user', async () => {
-        const fetchedUser = await userService.getByEmail('testemail.@emaiasd./coqwe');
+        const fetchedUser = await userService.findByEmail('testemail.@emaiasd./coqwe');
         expect(fetchedUser).toEqual(user);
       });
     });
@@ -50,7 +50,7 @@ describe('UserService', () => {
       });
 
       it('should throw an error', async () => {
-        await expect(userService.getByEmail('qweqwqe@.qwmeas.com')).rejects.toThrow();
+        await expect(userService.findByEmail('qweqwqe@.qwmeas.com')).rejects.toThrow();
       });
     });
   })

@@ -41,12 +41,10 @@ export class AuthService {
 
   public async getAuthenticatedUser(email: string, plainTextPassword: string): Promise<User> {
     try {
-      const user = await this.userService.getByEmail(email);
+      const user = await this.userService.findByEmail(email);
 
       await this.verifyPassword(plainTextPassword, user.password);
 
-      // TODO: Replace method of cleaning the password
-      user.password = undefined;
       return user;
     } catch (e) {
       throw new BadRequestException(`Email or password are incorrect!`);

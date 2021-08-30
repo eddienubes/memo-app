@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DefinitionService } from '../services/definition.service';
+import { PublicFileService } from '../services/public-file.service';
 
-describe('DefinitionService', () => {
-  let service: DefinitionService;
+describe('PublicFileService', () => {
+  let service: PublicFileService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [DefinitionService],
+      providers: [PublicFileService],
     }).compile();
 
-    service = module.get<DefinitionService>(DefinitionService);
+    service = module.get<PublicFileService>(PublicFileService);
   });
 
   it('should be defined', () => {

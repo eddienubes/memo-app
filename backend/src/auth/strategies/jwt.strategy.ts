@@ -25,6 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // gets invoked after JWT has been decoded
   async validate(payload: ITokenPayload): Promise<User> {
-    return this.userService.getById(payload.userId);
+    return this.userService.findById(payload.userId);
   }
 }

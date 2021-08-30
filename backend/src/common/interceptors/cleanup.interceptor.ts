@@ -12,6 +12,6 @@ export class CleanupInterceptor implements NestInterceptor {
         map(
           data => classToPlain(data)
         )
-      )
+      );
   }
 }

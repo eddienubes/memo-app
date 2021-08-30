@@ -1,8 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
-
-@Entity()
+@Entity('privateFile')
 export class PrivateFile {
 
   @PrimaryGeneratedColumn()
@@ -12,5 +11,8 @@ export class PrivateFile {
   key: string;
 
   @ManyToOne(() => User, user => user.files)
+  @JoinColumn({
+    name: 'ownerId'
+  })
   owner: User;
 }

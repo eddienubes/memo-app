@@ -12,6 +12,9 @@ import { AuthModule } from './auth/auth.module';
 import { authConfig, authConfigSchema } from './auth/config/auth-config';
 import { ExampleModule } from './example/example.module';
 import { DefinitionModule } from './definition/definition.module';
+import { awsConfig, awsConfigSchema } from './common/config/aws-config';
+import { FileModule } from './file/file.module';
+import { PrivateFileService } from './file/services/private-file.service';
 
 @Module({
   imports: [
@@ -24,19 +27,22 @@ import { DefinitionModule } from './definition/definition.module';
       load: [
         serverConfig,
         databaseConfig,
-        authConfig
+        authConfig,
+        awsConfig
       ],
       validationSchema:
         serverConfigSchema
           .concat(databaseConfigSchema)
           .concat(authConfigSchema)
+          .concat(awsConfigSchema)
     }),
     PhraseModule,
     UserModule,
     TestModule,
     AuthModule,
     ExampleModule,
-    DefinitionModule
+    DefinitionModule,
+    FileModule
   ],
   controllers: [AppController],
   providers: [AppService],
