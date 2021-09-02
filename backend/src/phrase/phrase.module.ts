@@ -5,15 +5,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Phrase } from './entities/phrase.entity';
 import { ExampleModule } from '../example/example.module';
 import { DefinitionModule } from '../definition/definition.module';
+import { PhraseSearchService } from './services/phrase-search.service';
+import { SearchModule } from '../search/search.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Phrase]),
     ExampleModule,
-    DefinitionModule
+    DefinitionModule,
+    SearchModule
   ],
   controllers: [PhraseController],
-  providers: [PhraseService],
+  providers: [PhraseService, PhraseSearchService],
   exports: [PhraseService]
 })
 export class PhraseModule {

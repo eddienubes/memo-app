@@ -19,11 +19,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
         return request?.cookies?.Authentication;
       }]),
-      secretOrKey: configService.jwtSecret
+      secretOrKey: configService.jwtAccessTokenSecret
     });
   }
 
-  // gets invoked after JWT has been decoded
+  // gets invoked after JWT access has been decoded
   async validate(payload: ITokenPayload): Promise<User> {
     return this.userService.findById(payload.userId);
   }

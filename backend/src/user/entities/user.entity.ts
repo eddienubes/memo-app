@@ -39,7 +39,12 @@ export class User {
   @JoinColumn()
   avatar?: PublicFile
 
-
   @OneToMany(() => PrivateFile, privateFile => privateFile.owner)
   files: PrivateFile[]
+
+  @Column({
+    nullable: true
+  })
+  @Exclude()
+  currentHashedRefreshToken?: string;
 }

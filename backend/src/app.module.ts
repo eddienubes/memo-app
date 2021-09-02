@@ -15,6 +15,8 @@ import { DefinitionModule } from './definition/definition.module';
 import { awsConfig, awsConfigSchema } from './common/config/aws-config';
 import { FileModule } from './file/file.module';
 import { PrivateFileService } from './file/services/private-file.service';
+import { elasticConfig, elasticConfigSchema } from './common/config/elastic-config';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -28,13 +30,15 @@ import { PrivateFileService } from './file/services/private-file.service';
         serverConfig,
         databaseConfig,
         authConfig,
-        awsConfig
+        awsConfig,
+        elasticConfig
       ],
       validationSchema:
         serverConfigSchema
           .concat(databaseConfigSchema)
           .concat(authConfigSchema)
           .concat(awsConfigSchema)
+          .concat(elasticConfigSchema)
     }),
     PhraseModule,
     UserModule,
@@ -42,7 +46,8 @@ import { PrivateFileService } from './file/services/private-file.service';
     AuthModule,
     ExampleModule,
     DefinitionModule,
-    FileModule
+    FileModule,
+    SearchModule
   ],
   controllers: [AppController],
   providers: [AppService],

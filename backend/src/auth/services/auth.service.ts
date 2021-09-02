@@ -13,7 +13,8 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService<ConfigType<typeof authConfig>>
+    @Inject(authConfig.KEY)
+    private readonly configService: ConfigType<typeof authConfig>
   ) {
   }
 
@@ -21,10 +22,28 @@ export class AuthService {
     return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
   }
 
-  public getCookieWithJwtToken(userId: number) {
+  public getCookieWithJwtAccessToken(userId: number): string {
     const payload: ITokenPayload = { userId };
-    const token = this.jwtService.sign(payload);
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get('jwtExpirationTime')}`
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.jwtAccessTokenSecret,
+      expiresIn: this.configService.jwtAccessTokenExpirationTime
+    });
+
+    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.jwtAccessTokenExpirationTime}`
+  }
+
+  public getCookieWithJwtRefreshToken(userId: number): { cookie: string, token: string } {
+    const payload: ITokenPayload = { userId };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.jwtRefreshTokenSecret,
+      expiresIn: this.configService.jwtRefreshTokenExpirationTime
+    });
+
+    const cookie = `Refresh=${token}; HttpOnly; Path=/auth/refresh; Max-Age=${this.configService.jwtRefreshTokenExpirationTime}`;
+    return {
+      cookie,
+      token
+    }
   }
 
   public async register(registerDto: RegisterDto): Promise<User> {

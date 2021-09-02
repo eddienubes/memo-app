@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { CreateTestQueryDto } from './dtos/create-test-query.dto';
 import { TestService } from './services/test.service';
-import { JwtAuthenticationGuard } from '../auth/guards/jwt-authentication.guard';
+import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { IRequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { Answer } from './entities/answer.entity';
 import { Test } from './entities/test.entity';
@@ -25,28 +25,28 @@ export class TestController {
   ) {
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAccessGuard)
   @UseInterceptors(CleanupInterceptor)
   @Get()
   async findAll(@Req() req: IRequestWithUser, @Query() dto: FindTestsQueryDto): Promise<Test[]> {
     return this.testsService.findAll(req.user.id, dto.done);
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAccessGuard)
   @UseInterceptors(CleanupInterceptor)
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: IRequestWithUser): Promise<Test> {
     return this.testsService.findById(id, req.user.id);
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAccessGuard)
   @UseInterceptors(CleanupInterceptor)
   @Post()
   async createTests(@Query() createTestDto: CreateTestQueryDto, @Req() req: IRequestWithUser): Promise<Test[]> {
     return this.testsService.createTests(createTestDto, req.user.id); // TODO: Mask answers' IDs
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAccessGuard)
   @Post(':tid/answer/:aid')
   answerToTest(
     @Param('tid', ParseIntPipe) testId: number, // TODO: Restrict maximum number client can send as an id

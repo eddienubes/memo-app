@@ -7,18 +7,17 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Phrase, PhraseType } from '../entities/phrase.entity';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { CreatePhraseDto } from '../dtos/create-phrase.dto';
-import { Example } from '../../example/entities/example.entity';
 import { PaginationQueryDto } from '../dtos/pagination-query.dto';
 import { UpdatePhraseDto } from '../dtos/update-phrase.dto';
-import { UpdateExampleDto } from '../../example/dtos/update-example.dto';
 import { CreateExampleDto } from '../../example/dtos/create-example.dto';
 import { Choice } from '../../test/entities/choice.entitiy';
 import { Answer } from '../../test/entities/answer.entity';
 import { Definition } from '../../definition/entities/definition.entity';
 import { ExampleService } from '../../example/services/example.service';
 import { DefinitionService } from '../../definition/services/definition.service';
+import { PhraseSearchService } from './phrase-search.service';
 
 @Injectable()
 export class PhraseService {
@@ -28,7 +27,8 @@ export class PhraseService {
     @InjectRepository(Phrase)
     private readonly phraseRepository: Repository<Phrase>,
     private readonly exampleService: ExampleService,
-    private readonly definitionService: DefinitionService
+    private readonly definitionService: DefinitionService,
+    private readonly phraseSearchService: PhraseSearchService
   ) {
   }
 
@@ -68,7 +68,11 @@ export class PhraseService {
     phrase.definition = definition;
     phrase.userId = userId;
 
-    return this.phraseRepository.save(phrase);
+    const result = await this.phraseRepository.save(phrase);
+
+    await this.phraseSearchService.indexPhrase(result);
+
+    return result;
   }
 
   public async findById(id: number, userId?: number): Promise<Phrase> {
@@ -93,7 +97,9 @@ export class PhraseService {
 
   public async remove(id: number, userId: number): Promise<Phrase> {
     const phrase = await this.findById(id, userId);
-    return this.phraseRepository.remove(phrase);
+    const result = await this.phraseRepository.remove(phrase);
+    await this.phraseSearchService.remove(result.id);
+    return result;
   }
 
 
@@ -111,13 +117,15 @@ export class PhraseService {
       type: updatePhraseDtp.type
     });
 
+    await this.phraseSearchService.update(updatedPhrase);
+
     return {
       ...updatedPhrase,
       definition
     }
   }
 
-  async getLowestRatedPhrasesByType(type: PhraseType) {
+  public async getLowestRatedPhrasesByType(type: PhraseType) {
     const phrases = await this.phraseRepository.createQueryBuilder('phraseId')
       .where(qb => {
         const subQuery = qb.subQuery()
@@ -183,5 +191,19 @@ export class PhraseService {
     });
     // console.log(phrase);
     return phrases;
+  }
+
+  public async searchForPhrases(text: string, userId: number): Promise<Phrase[]> {
+    const results = await this.phraseSearchService.search(text, userId);
+
+    const ids = results.map(result => result.id);
+
+    if (!ids.length) {
+      return [];
+    }
+
+    return this.phraseRepository.find({
+      where: { id: In(ids) }
+    });
   }
 }

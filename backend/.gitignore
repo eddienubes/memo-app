@@ -23,6 +23,7 @@ ormconfig.js
 .env
 .env.production
 .env.development
+.env.docker
 
 # IDEs and editors
 /.idea

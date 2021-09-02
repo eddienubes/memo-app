@@ -1,7 +1,13 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { PublicFileService } from '../../file/services/public-file.service';
 import { CreateFileDto } from '../../file/dtos/create-file.dto';
@@ -9,6 +15,7 @@ import { PublicFile } from '../../file/entities/public-file.entity';
 import { PrivateFile } from '../../file/entities/private-file.entity';
 import { PrivateFileService } from '../../file/services/private-file.service';
 import { IPrivateFileRO, IPrivateFileWithUrlRO } from '../../file/interfaces/private-file.ro.interface';
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -17,7 +24,8 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly publicFileService: PublicFileService,
-    private readonly privateFileService: PrivateFileService
+    private readonly privateFileService: PrivateFileService,
+    private readonly connection: Connection
   ) {
   }
 
@@ -82,6 +90,8 @@ export class UserService {
   }
 
   public async removeAvatar(userId: number): Promise<PublicFile> {
+    const queryRunner = this.connection.createQueryRunner();
+
     const user = await this.findById(userId);
 
     const fileId = user.avatar?.id;
@@ -90,12 +100,27 @@ export class UserService {
       throw new BadRequestException(`You do not have an avatar!`);
     }
 
-    await this.userRepository.update(userId, {
-      ...user,
-      avatar: null
-    });
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    return this.publicFileService.deletePublicFile(fileId);
+    let publicFile;
+    try {
+      await queryRunner.manager.update(User, userId, {
+        ...user,
+        avatar: null
+      });
+
+      publicFile = await this.publicFileService.deletePublicFileWithQueryRunner(fileId, queryRunner);
+
+      await queryRunner.commitTransaction();
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+      throw new e;
+    } finally {
+      await queryRunner.release();
+    }
+
+    return publicFile;
   }
 
   public async addPrivateFile(createFileDto: CreateFileDto, userId: number): Promise<PrivateFile> {
@@ -131,5 +156,27 @@ export class UserService {
         }
       })
     );
+  }
+
+  public async setCurrentRefreshToken(refreshToken: string, userId: number): Promise<void> {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userRepository.update(userId, {
+      currentHashedRefreshToken
+    });
+  }
+
+  public async findUserIfRefreshTokenMatches(refreshToken: string, userId: number): Promise<User | undefined> {
+    const user = await this.findById(userId);
+
+    const isValid = await bcrypt.compare(
+      refreshToken,
+      user.currentHashedRefreshToken
+    );
+    console.log(isValid, user);
+    if (isValid) {
+      return user;
+    }
+
+    return undefined;
   }
 }
