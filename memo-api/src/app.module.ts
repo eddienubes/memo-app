@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
 import { serverConfig, serverConfigSchema } from './common/config/server-config';
-import { DATABASE_CONFIG_TOKEN, databaseConfig, databaseConfigSchema } from './common/config/database-config';
+import { databaseConfig, databaseConfigSchema } from './common/config/database-config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PhraseModule } from './phrase/phrase.module';
 import { UserModule } from './user/user.module';
@@ -14,9 +14,10 @@ import { ExampleModule } from './example/example.module';
 import { DefinitionModule } from './definition/definition.module';
 import { awsConfig, awsConfigSchema } from './common/config/aws-config';
 import { FileModule } from './file/file.module';
-import { PrivateFileService } from './file/services/private-file.service';
 import { elasticConfig, elasticConfigSchema } from './common/config/elastic-config';
 import { SearchModule } from './search/search.module';
+import { emailManagerConfig, emailManagerValidationSchema } from './email-manager/config/email-manager-config';
+import { EmailManagerModule } from './email-manager/email-manager.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { SearchModule } from './search/search.module';
         databaseConfig,
         authConfig,
         awsConfig,
-        elasticConfig
+        elasticConfig,
+        emailManagerConfig
       ],
       validationSchema:
         serverConfigSchema
@@ -39,6 +41,7 @@ import { SearchModule } from './search/search.module';
           .concat(authConfigSchema)
           .concat(awsConfigSchema)
           .concat(elasticConfigSchema)
+          .concat(emailManagerValidationSchema)
     }),
     PhraseModule,
     UserModule,
@@ -47,7 +50,8 @@ import { SearchModule } from './search/search.module';
     ExampleModule,
     DefinitionModule,
     FileModule,
-    SearchModule
+    SearchModule,
+    EmailManagerModule
   ],
   controllers: [AppController],
   providers: [AppService],

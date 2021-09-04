@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  memo:
+  memo-api-db:
     env_file:
       - .env
     image: postgres
