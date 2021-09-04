@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CreatePhraseDto } from './dtos/create-phrase.dto';
 import { PhraseService } from './services/phrase.service';
 import { PaginationQueryDto } from './dtos/pagination-query.dto';
@@ -7,12 +20,14 @@ import { UpdatePhraseDto } from './dtos/update-phrase.dto';
 import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { IRequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { CreateExampleDto } from '../example/dtos/create-example.dto';
+import { CacheInterceptor } from '@nestjs/common';
 
 @Controller('phrase')
+@UseInterceptors(CacheInterceptor)
 export class PhraseController {
 
   constructor(
-    private readonly phrasesService: PhraseService
+    private readonly phrasesService: PhraseService,
   ) {
   }
 

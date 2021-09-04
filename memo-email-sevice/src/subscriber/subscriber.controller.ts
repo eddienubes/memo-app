@@ -18,7 +18,6 @@ export class SubscriberController {
 
   @MessagePattern({ cmd: 'get-all-subscribers' })
   public async getAllSubscriber() {
-    console.log('Get all subs');
     return this.subscriberService.getAllSubscribers();
   }
 }

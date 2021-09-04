@@ -15,7 +15,6 @@ export class EmailManagerController {
   @Get()
   @UseGuards(JwtAccessGuard)
   public async getSubscribers() {
-    console.log('Requestor');
     return this.subscriberService.send({
       cmd: 'get-all-subscribers'
     }, '');
