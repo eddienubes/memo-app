@@ -9,6 +9,8 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { authConfig } from './config/auth-config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { GoogleAuthService } from './services/google-auth.service';
+import { googleAuthConfig } from '../common/config/google-auth-config';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     JwtModule.registerAsync({
       imports: [
         ConfigModule.forFeature(authConfig),
+        ConfigModule.forFeature(googleAuthConfig)
       ],
       inject: [authConfig.KEY],
       useFactory: async (configService: ConfigType<typeof authConfig>) => ({
@@ -28,7 +31,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
       })
     })
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy, GoogleAuthService],
   controllers: [AuthController]
 })
 export class AuthModule {

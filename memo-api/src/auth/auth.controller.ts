@@ -3,18 +3,21 @@ import { AuthService } from './services/auth.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LocalAuthenticationGuard } from './guards/local-authentication.guard';
 import { IRequestWithUser } from './interfaces/request-with-user.interface';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { User } from '../user/entities/user.entity';
 import { JwtAccessGuard } from './guards/jwt-access.guard';
 import { CleanupInterceptor } from '../common/interceptors/cleanup.interceptor';
 import { UserService } from '../user/services/user.service';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
+import { TokenVerificationDto } from './dtos/token-verification.dto';
+import { GoogleAuthService } from './services/google-auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly googleAuthService: GoogleAuthService,
   ) {
   }
 
@@ -63,4 +66,18 @@ export class AuthController {
     res.setHeader('Set-Cookie', accessTokenCookie);
     return req.user;
   }
+
+  @Post('google')
+  public async authenticateWithGoogle(@Body() tokenData: TokenVerificationDto, @Res({ passthrough: true }) res: Response) {
+    const {
+      accessTokenCookie,
+      refreshTokenCookie,
+      user,
+    } = await this.googleAuthService.authenticate(tokenData.token);
+
+    res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+
+    return user;
+  }
+
 }
