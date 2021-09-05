@@ -39,6 +39,9 @@ export class Phrase {
   })
   type: PhraseType
 
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
   @Exclude()
   @OneToOne(() => Definition, definition => definition.phrase)
   definition: Definition;
