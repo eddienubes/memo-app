@@ -18,6 +18,7 @@ import { elasticConfig, elasticConfigSchema } from './common/config/elastic-conf
 import { SearchModule } from './search/search.module';
 import { emailManagerConfig, emailManagerValidationSchema } from './email-manager/config/email-manager-config';
 import { EmailManagerModule } from './email-manager/email-manager.module';
+import { googleAuthConfig, googleAuthValidationSchema } from './common/config/google-auth-config';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { EmailManagerModule } from './email-manager/email-manager.module';
         authConfig,
         awsConfig,
         elasticConfig,
-        emailManagerConfig
+        emailManagerConfig,
+        googleAuthConfig
       ],
       validationSchema:
         serverConfigSchema
@@ -42,6 +44,7 @@ import { EmailManagerModule } from './email-manager/email-manager.module';
           .concat(awsConfigSchema)
           .concat(elasticConfigSchema)
           .concat(emailManagerValidationSchema)
+          .concat(googleAuthValidationSchema)
     }),
     PhraseModule,
     UserModule,
