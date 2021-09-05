@@ -37,7 +37,6 @@ const ABar = styled(MuiAppBar, {
 }));
 
 
-
 const AppBar: React.FC<IProps> = (props) => {
   const { open, handleDrawerOpen } = props;
 
@@ -57,7 +56,7 @@ const AppBar: React.FC<IProps> = (props) => {
           <MenuIcon/>
         </IconButton>
         <Typography variant="h6" noWrap component="div">
-          Mini variant drawer
+          memo
         </Typography>
       </Toolbar>
     </ABar>

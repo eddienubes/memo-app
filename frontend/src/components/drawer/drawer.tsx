@@ -13,6 +13,10 @@ import MailIcon from '@mui/icons-material/Mail';
 import ListItemText from '@mui/material/ListItemText';
 import React from 'react';
 import DrawerHeader from '../drawer-header';
+import GoogleIcon from '@mui/icons-material/Google';
+import GoogleButton from '../google-button';
+import FormatColorTextRoundedIcon from '@mui/icons-material/FormatColorTextRounded';
+import { useHistory } from 'react-router';
 
 interface IProps {
   handleDrawerClose: () => void;
@@ -36,7 +40,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   overflowX: 'hidden',
   width: `calc(${theme.spacing(7)} + 1px)`,
   [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(9)} + 1px)`,
+    width: `calc(${theme.spacing(7)} + 1px)`,
   },
 });
 
@@ -60,38 +64,41 @@ const DrawerStyled = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== '
 
 const Drawer: React.FC<IProps> = (props) => {
   const theme = useTheme();
+  const history = useHistory();
 
   const { open, handleDrawerClose } = props;
+
+  const drawerClickHandler = (path: string) => () => {
+    history.push(path);
+  }
 
   return (
     <DrawerStyled variant="permanent" open={open}>
       <DrawerHeader>
-        йцуйцуйцуйцуйу
+        memo menu
         <IconButton onClick={handleDrawerClose}>
           {theme.direction === 'rtl' ? <ChevronRightIcon/> : <ChevronLeftIcon/>}
         </IconButton>
       </DrawerHeader>
       <Divider/>
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon/> : <MailIcon/>}
-            </ListItemIcon>
-            <ListItemText primary={text}/>
-          </ListItem>
-        ))}
+        <ListItem button key={'text'} onClick={drawerClickHandler('phrases')}>
+          <ListItemIcon>
+            <FormatColorTextRoundedIcon/>
+          </ListItemIcon>
+          <ListItemText primary={'Phrases'}/>
+        </ListItem>
       </List>
       <Divider/>
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
+        <GoogleButton render={
+          <ListItem button key={'Sign in'}>
             <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon/> : <MailIcon/>}
+              <GoogleIcon/>
             </ListItemIcon>
-            <ListItemText primary={text}/>
+            <ListItemText primary={'Sign in'}/>
           </ListItem>
-        ))}
+        }/>
       </List>
     </DrawerStyled>
   );
