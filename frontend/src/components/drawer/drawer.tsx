@@ -11,12 +11,14 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import ListItemText from '@mui/material/ListItemText';
-import React from 'react';
+import React, { useContext } from 'react';
 import DrawerHeader from '../drawer-header';
 import GoogleIcon from '@mui/icons-material/Google';
 import GoogleButton from '../google-button';
 import FormatColorTextRoundedIcon from '@mui/icons-material/FormatColorTextRounded';
 import { useHistory } from 'react-router';
+import GlobalStateContext from '../../contexts/global-state-context/global-state-context';
+import { Avatar } from '@mui/material';
 
 interface IProps {
   handleDrawerClose: () => void;
@@ -65,6 +67,7 @@ const DrawerStyled = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== '
 const Drawer: React.FC<IProps> = (props) => {
   const theme = useTheme();
   const history = useHistory();
+  const globalState = useContext(GlobalStateContext);
 
   const { open, handleDrawerClose } = props;
 
@@ -91,14 +94,24 @@ const Drawer: React.FC<IProps> = (props) => {
       </List>
       <Divider/>
       <List>
-        <GoogleButton render={
-          <ListItem button key={'Sign in'}>
-            <ListItemIcon>
-              <GoogleIcon/>
-            </ListItemIcon>
-            <ListItemText primary={'Sign in'}/>
-          </ListItem>
-        }/>
+        {
+          globalState.loggedIn ?
+            <ListItem button key={'Sign in'}>
+              <ListItemIcon>
+                <Avatar sx={{ width: 25, height: 25 }} alt="avatar" src={globalState.user?.googleAvatar}/>
+              </ListItemIcon>
+              <ListItemText primary={'Signed in'}/>
+            </ListItem>
+            :
+            <GoogleButton render={
+              <ListItem button key={'Sign in'}>
+                <ListItemIcon>
+                  <GoogleIcon/>
+                </ListItemIcon>
+                <ListItemText primary={'Sign in'}/>
+              </ListItem>
+            }/>
+        }
       </List>
     </DrawerStyled>
   );

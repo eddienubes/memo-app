@@ -34,6 +34,7 @@ export class PhraseService {
 
   public findAll(paginationDto: PaginationQueryDto, userId: number): Promise<Phrase[]> {
     return this.phraseRepository.find({
+      skip: paginationDto.offset,
       take: paginationDto.limit,
       relations: ['examples', 'definition'],
       where: {
@@ -70,7 +71,7 @@ export class PhraseService {
 
     const result = await this.phraseRepository.save(phrase);
 
-    await this.phraseSearchService.indexPhrase(result);
+    // await this.phraseSearchService.indexPhrase(result);
 
     return result;
   }
@@ -98,7 +99,7 @@ export class PhraseService {
   public async remove(id: number, userId: number): Promise<Phrase> {
     const phrase = await this.findById(id, userId);
     const result = await this.phraseRepository.remove(phrase);
-    await this.phraseSearchService.remove(result.id);
+    // await this.phraseSearchService.remove(result.id);
     return result;
   }
 
@@ -117,7 +118,7 @@ export class PhraseService {
       type: updatePhraseDtp.type
     });
 
-    await this.phraseSearchService.update(updatedPhrase);
+    // await this.phraseSearchService.update(updatedPhrase);
 
     return {
       ...updatedPhrase,

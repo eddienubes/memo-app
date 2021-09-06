@@ -23,7 +23,7 @@ interface IProps {
   type: string;
   createdAt: string;
   definition: string;
-  examples: string[]
+  examples: { value: string; id: number }[]
 }
 
 const ExpandMore = styled((props: ExpandMoreProps) => {
@@ -99,7 +99,7 @@ const PhraseCard: React.FC<IProps> = (props) => {
           <CardContent>
             <Typography paragraph align="center" fontWeight="bold">Examples</Typography>
             {
-              examples.map(example => <Typography paragraph>{example}</Typography>)
+              examples.map(example => <Typography key={example.id + 'example'} paragraph>{example.value}</Typography>)
             }
           </CardContent>
         </Collapse>

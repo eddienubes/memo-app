@@ -179,4 +179,15 @@ export class UserService {
 
     return undefined;
   }
+
+  public async createWithGoogle(email: string, username: string, avatarUrl: string) {
+    const newUser = await this.userRepository.create({
+      email,
+      username,
+      isRegisteredWithGoogle: true,
+      googleAvatar: avatarUrl
+    });
+
+    return this.userRepository.save(newUser);
+  }
 }

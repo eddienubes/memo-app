@@ -21,6 +21,7 @@ import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { IRequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { CreateExampleDto } from '../example/dtos/create-example.dto';
 import { CacheInterceptor } from '@nestjs/common';
+import { PhraseType } from './entities/phrase.entity';
 
 @Controller('phrase')
 @UseInterceptors(CacheInterceptor)
@@ -37,11 +38,17 @@ export class PhraseController {
     return this.phrasesService.findAll(paginationQuery, req.user.id);
   }
 
+  @Get('type')
+  @UseGuards(JwtAccessGuard)
+  findTypes() {
+    return Object.keys(PhraseType);
+  }
+
   @UseGuards(JwtAccessGuard)
   @Get('search')
   search(@Query('by') by: string, @Req() req: IRequestWithUser) {
     if (!by) {
-      return this.phrasesService.findAll({ limit: undefined }, req.user.id);
+      return this.phrasesService.findAll({ limit: undefined, offset: undefined }, req.user.id);
     }
     return this.phrasesService.searchForPhrases(by, req.user.id);
   }

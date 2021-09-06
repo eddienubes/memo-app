@@ -21,30 +21,36 @@ export class User {
   username: string;
 
   @Exclude()
-  @Column({ length: 2000 })
-  password: string;
+  @Column({ length: 2000, nullable: true })
+  password?: string;
 
   @OneToMany(() => Phrase, phrase => phrase.user, {
     onDelete: 'CASCADE',
   })
-  phrases: Phrase[]
+  phrases: Phrase[];
 
   @OneToMany(() => Choice, log => log.user)
-  choices: Choice[]
+  choices: Choice[];
 
   @OneToOne(() => PublicFile, {
     nullable: true,
-    eager: true
+    eager: true,
   })
   @JoinColumn()
-  avatar?: PublicFile
+  avatar?: PublicFile;
 
   @OneToMany(() => PrivateFile, privateFile => privateFile.owner)
-  files: PrivateFile[]
+  files: PrivateFile[];
 
   @Column({
-    nullable: true
+    nullable: true,
   })
   @Exclude()
   currentHashedRefreshToken?: string;
+
+  @Column({ default: false })
+  isRegisteredWithGoogle: boolean;
+
+  @Column({ nullable: true })
+  googleAvatar?: string;
 }

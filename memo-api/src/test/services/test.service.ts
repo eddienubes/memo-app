@@ -68,7 +68,7 @@ export class TestService {
 
     let phrases: Phrase[];
     if (lowRatedPhrases.length < this.MAX_TESTS_AMOUNT) {
-      phrases = await this.phraseService.findAll({ limit: this.MAX_TESTS_AMOUNT }, userId);
+      phrases = await this.phraseService.findAll({ limit: this.MAX_TESTS_AMOUNT, offset: undefined }, userId);
     }
 
     if (phrases.length < this.MAX_TESTS_AMOUNT) {

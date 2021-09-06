@@ -8,6 +8,7 @@ import AppBar from '../../components/app-bar';
 import Drawer from '../../components/drawer';
 import PhraseCard from '../../components/phrase-card';
 import { Grid } from '@mui/material';
+import PhrasesPage from '../../pages/phrases-page';
 
 const RoutingContainer = () => {
   const [open, setOpen] = React.useState(false);
@@ -29,17 +30,7 @@ const RoutingContainer = () => {
           <DrawerHeader/>
           <Switch>
             <Route path={`/phrases`}>
-              <Grid container spacing={3}>
-                <Grid item xs>
-                  <PhraseCard
-                    phrase={'asdasdas'}
-                    type={`nount`}
-                    definition={`something`}
-                    createdAt={new Date().toISOString()}
-                    examples={['asdasd', 'adqwdqw', 'qwqewewqeqweqwewq']}
-                  />
-                </Grid>
-              </Grid>
+              <PhrasesPage/>
             </Route>
           </Switch>
         </Box>

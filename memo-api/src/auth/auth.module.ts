@@ -17,6 +17,7 @@ import { googleAuthConfig } from '../common/config/google-auth-config';
     UserModule,
     PassportModule,
     ConfigModule.forFeature(authConfig),
+    ConfigModule.forFeature(googleAuthConfig),
     JwtModule.registerAsync({
       imports: [
         ConfigModule.forFeature(authConfig),

@@ -21,7 +21,6 @@ const GoogleButton: React.FC<IProps> = ({ render }) => {
       })}
       clientId={clientId}
       onSuccess={handleSuccess}
-      uxMode="redirect"
       redirectUri={originUrl}
     />
   );
