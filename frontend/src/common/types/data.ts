@@ -17,3 +17,18 @@ export interface Phrase {
   definition: Definition,
   createdAt: string;
 }
+
+export interface Test {
+  id: number;
+  done: boolean;
+  phrase: {
+    id: number;
+    value: string;
+    type: string;
+    userId: number;
+  };
+  answers: {
+    id: number;
+    definition: string;
+  }[];
+}
