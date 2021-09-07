@@ -1,12 +1,10 @@
-import React, { FormEventHandler, useState } from 'react';
+import React, { FormEventHandler, useState, useContext } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { Divider, Typography } from '@mui/material';
 import CardActions from '@mui/material/CardActions';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Collapse from '@mui/material/Collapse';
-import Box from '@mui/material/Box';
-import { Test } from '../../common/types/data';
+import { Box } from '@mui/material';
+import { Test as TestData } from '../../common/types/data';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -14,19 +12,39 @@ import FormLabel from '@mui/material/FormLabel';
 import Button from '@mui/material/Button';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
+import ServicesContext from '../../contexts/service-context/service-context';
+import GlobalStateContext from "../../contexts/global-state-context/global-state-context";
 
 interface IProps {
-  test: Test
+  test: TestData
 }
+
 
 const Test: React.FC<IProps> = ({ test }) => {
   const [err, setErr] = useState<boolean>(false);
   const [helperText, setHelperText] = useState<string>('Select an option')
-  const [answerId, setAnswerId] = useState(null);
+  const [answerId, setAnswerId] = useState<number | null>(null);
+  const { testService } = useContext(ServicesContext);
+  const { state, dispatch } = useContext(GlobalStateContext);
+
+  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAnswerId(+e.target.value);
+  }
+
+  const handleSubmit: FormEventHandler = (e) => {
+    e.preventDefault();
+
+    testService
+      .answer(answerId, test.id)
+      .then(answer => dispatch({ type: 'setNotification', payload: 'Correct' }))
+      .catch(e => dispatch({ type: 'setError', payload: e }));
+  }
+
+  const border = test.done ? '1px solid green' : '1px solid red';
 
   return (
-    <Box sx={{ minWidth: 275 }}>
-      <Card variant="elevation">
+    <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <Card variant="elevation" sx={{ border, borderRadius: '10px' }}>
         <CardContent>
           {/*<Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>*/}
           {/*  Phrase*/}
@@ -48,15 +66,19 @@ const Test: React.FC<IProps> = ({ test }) => {
               error={err}
               variant="standard"
             >
-              <FormLabel component="legend">Pop quiz: Material-UI is...</FormLabel>
+              <FormLabel component="legend">Phrase quiz</FormLabel>
               <RadioGroup
                 aria-label="quiz"
                 name="quiz"
-                value={value}
+                value={answerId}
                 onChange={handleRadioChange}
               >
-                <FormControlLabel value="best" control={<Radio />} label="The best!" />
-                <FormControlLabel value="worst" control={<Radio />} label="The worst." />
+                {
+                  test.answers.map(a => {
+                    return <FormControlLabel key={a.id + 'answer'} value={a.id} control={<Radio/>}
+                                             label={a.definition}/>
+                  })
+                }
               </RadioGroup>
               <FormHelperText>{helperText}</FormHelperText>
               <Button sx={{ mt: 1, mr: 1 }} type="submit" variant="outlined">

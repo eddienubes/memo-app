@@ -5,7 +5,7 @@ import { PhraseInput } from '../pages/phrases-page/phrases-page';
 export default class PhrasesService {
   baseUrl = `${process.env.REACT_APP_MEMO_API_BASE_URL}/phrase`;
 
-  async findPhrases(offset: number, limit: number): Promise<Phrase[]> {
+  async findPhrases(offset: number, limit?: number): Promise<Phrase[]> {
     try {
       const { data } = await axios.get(`${this.baseUrl}`,
         {

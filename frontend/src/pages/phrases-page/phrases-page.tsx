@@ -5,7 +5,8 @@ import { Phrase } from '../../common/types/data';
 import ServicesContext from '../../contexts/service-context/service-context';
 import ErrorIndicator from '../../components/error-indicator';
 import CreatePhraseModal from '../../components/create-phrase-modal';
-import CreatePhraseButton from '../../components/create-phrase-button';
+import FloatingButton from '../../components/floating-button';
+import GlobalStateContext from "../../contexts/global-state-context/global-state-context";
 
 interface Example {
   id: string;
@@ -79,11 +80,12 @@ const reducer = (state: PhraseInput, action: Actions) => {
 const PhrasesPage = () => {
   const [phrases, setPhrases] = useState<Phrase[]>([]);
   const { phrasesService } = useContext(ServicesContext);
-  const [err, setError] = useState(null);
   const [loadingPhrases, setLoadingPhrases] = useState<boolean>(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loadingPhraseTypes, setLoadingPhraseTypes] = useState<boolean>(true);
   const [phraseTypes, setPhraseTypes] = useState<string[]>([]);
+  const { dispatch: dispatchGlobalState } = useContext(GlobalStateContext);
+
 
   const [formState, dispatchForm] = useReducer(
     reducer,
@@ -97,7 +99,7 @@ const PhrasesPage = () => {
     setLoadingPhrases(true);
     setLoadingPhraseTypes(true);
     phrasesService
-      .findPhrases(0, 10)
+      .findPhrases(0, undefined)
       .then(phrases => {
         setLoadingPhrases(false);
         setPhrases((state) => {
@@ -109,7 +111,7 @@ const PhrasesPage = () => {
       })
       .catch(e => {
         setLoadingPhrases(true);
-        setError(e);
+        dispatchGlobalState({ type: 'setError', payload: e });
       });
 
     phrasesService
@@ -119,14 +121,15 @@ const PhrasesPage = () => {
         setLoadingPhraseTypes(false);
       })
       .catch(e => {
-        setError(e);
+        dispatchGlobalState({ type: 'setError', payload: e });
         setLoadingPhraseTypes(false);
       });
 
-  }, [phrasesService]);
+  }, [dispatchGlobalState, phrasesService]);
 
   const handleFormSubmit: FormEventHandler = (event) => {
     dispatchForm({ type: 'reset', payload: initialState });
+    dispatchGlobalState({ type: 'setBackGroundLoading', payload: true });
     event.preventDefault();
     modalCloseHandler();
     phrasesService
@@ -136,16 +139,12 @@ const PhrasesPage = () => {
           return [
             phrase,
             ...phrases,
-          ]
-        })
+          ];
+        });
+        dispatchGlobalState({ type: 'setBackGroundLoading', payload: false });
       })
-      .catch(e => setError(e));
+      .catch(e => dispatchGlobalState({ type: 'setError', payload: e }));
 
-  }
-
-
-  if (err) {
-    return <ErrorIndicator/>;
   }
 
   if (loadingPhrases || loadingPhraseTypes) {
@@ -154,7 +153,7 @@ const PhrasesPage = () => {
 
   return (
     <>
-      <CreatePhraseButton onClickHandler={modalOpenHandler}/>
+      <FloatingButton onClickHandler={modalOpenHandler}/>
       <CreatePhraseModal formState={formState}
                          dispatch={dispatchForm}
                          types={phraseTypes}

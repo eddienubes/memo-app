@@ -18,6 +18,11 @@ export interface Phrase {
   createdAt: string;
 }
 
+export interface Answer {
+  id: number;
+  definition: string;
+}
+
 export interface Test {
   id: number;
   done: boolean;
@@ -27,8 +32,5 @@ export interface Test {
     type: string;
     userId: number;
   };
-  answers: {
-    id: number;
-    definition: string;
-  }[];
+  answers: Answer[];
 }

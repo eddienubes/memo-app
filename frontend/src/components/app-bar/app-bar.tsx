@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -7,6 +7,8 @@ import { styled } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar/AppBar';
 import { APP_BAR_DRAWER_WIDTH } from '../../utils/constants';
+import BackgroundLoadingBar from "../background-loading-bar";
+import GlobalStateContext from "../../contexts/global-state-context/global-state-context";
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -39,9 +41,12 @@ const ABar = styled(MuiAppBar, {
 
 const AppBar: React.FC<IProps> = (props) => {
   const { open, handleDrawerOpen } = props;
+  const { state: globalState } = useContext(GlobalStateContext);
+
 
   return (
     <ABar position="fixed" open={open}>
+      { globalState.backgroundLoading ? <BackgroundLoadingBar/> : null }
       <Toolbar>
         <IconButton
           color="inherit"

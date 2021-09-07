@@ -1,11 +1,11 @@
-import React, { Dispatch, FormEventHandler, useState } from 'react';
+import React, {  FormEventHandler, useState } from 'react';
 import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Divider, InputLabel, Select, Slider, TextField } from '@mui/material';
+import { Divider, InputLabel, Select, TextField } from '@mui/material';
 import { FormControl } from '@mui/material';
 import { MenuItem } from '@mui/material';
 import { Actions, PhraseInput } from '../../pages/phrases-page/phrases-page';
@@ -104,7 +104,7 @@ const CreatePhraseModal: React.FC<IProps> = (
                   labelId="demo-simple-select-filled-label"
                   id="demo-simple-select-filled"
                   value={formState.type}
-                  onBlur={(e) => dispatch({ type: 'type', payload: e.target.value })}
+                  onChange={(e) => dispatch({ type: 'type', payload: e.target.value })}
                 >
                   {
                     types.map(t => <MenuItem key={t} value={t}>{t}</MenuItem>)

@@ -19,6 +19,7 @@ import FormatColorTextRoundedIcon from '@mui/icons-material/FormatColorTextRound
 import { useHistory } from 'react-router';
 import GlobalStateContext from '../../contexts/global-state-context/global-state-context';
 import { Avatar } from '@mui/material';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 interface IProps {
   handleDrawerClose: () => void;
@@ -91,14 +92,20 @@ const Drawer: React.FC<IProps> = (props) => {
           </ListItemIcon>
           <ListItemText primary={'Phrases'}/>
         </ListItem>
+        <ListItem button key={'tests'} onClick={drawerClickHandler('tests')}>
+          <ListItemIcon>
+            <AssignmentIcon/>
+          </ListItemIcon>
+          <ListItemText primary={'Tests'}/>
+        </ListItem>
       </List>
       <Divider/>
       <List>
         {
-          globalState.loggedIn ?
+          globalState.state.loggedIn ?
             <ListItem button key={'Sign in'}>
               <ListItemIcon>
-                <Avatar sx={{ width: 25, height: 25 }} alt="avatar" src={globalState.user?.googleAvatar}/>
+                <Avatar sx={{ width: 25, height: 25 }} alt="avatar" src={globalState.state.user?.googleAvatar}/>
               </ListItemIcon>
               <ListItemText primary={'Signed in'}/>
             </ListItem>

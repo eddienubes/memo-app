@@ -10,7 +10,7 @@ const fabStyle: SxProps = {
   zIndex: 1
 };
 
-const CreatePhraseButton: React.FC<{ onClickHandler: () => void }> = ({ onClickHandler }) => {
+const FloatingButton: React.FC<{ onClickHandler: () => void }> = ({ onClickHandler }) => {
 
   return (
     <Fab onClick={onClickHandler} sx={fabStyle} color="primary" aria-label="add">
@@ -19,4 +19,4 @@ const CreatePhraseButton: React.FC<{ onClickHandler: () => void }> = ({ onClickH
   )
 }
 
-export default CreatePhraseButton;
+export default FloatingButton;
