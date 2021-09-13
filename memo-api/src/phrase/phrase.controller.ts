@@ -33,6 +33,7 @@ export class PhraseController {
   }
 
   @UseGuards(JwtAccessGuard)
+  @UseInterceptors(CacheInterceptor)
   @Get()
   findAll(@Query() paginationQuery: PaginationQueryDto, @Req() req: IRequestWithUser) {
     return this.phrasesService.findAll(paginationQuery, req.user.id);
@@ -76,5 +77,4 @@ export class PhraseController {
   createExample(@Param('pid', ParseIntPipe) phraseId: number, @Body() createExampleDto: CreateExampleDto, @Req() req: IRequestWithUser) {
     return this.phrasesService.createExample(phraseId, createExampleDto, req.user.id);
   }
-
 }

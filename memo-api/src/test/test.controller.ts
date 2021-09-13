@@ -29,6 +29,7 @@ export class TestController {
   @UseInterceptors(CleanupInterceptor)
   @Get()
   async findAll(@Req() req: IRequestWithUser, @Query() dto: FindTestsQueryDto): Promise<Test[]> {
+    console.log(dto);
     return this.testsService.findAll(req.user.id, dto.done);
   }
 

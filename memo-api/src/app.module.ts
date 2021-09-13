@@ -19,6 +19,8 @@ import { SearchModule } from './search/search.module';
 import { emailManagerConfig, emailManagerValidationSchema } from './email-manager/config/email-manager-config';
 import { EmailManagerModule } from './email-manager/email-manager.module';
 import { googleAuthConfig, googleAuthValidationSchema } from './common/config/google-auth-config';
+import { redisConfig, redisConfigValidationSchema } from './common/config/redis-config';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -35,7 +37,8 @@ import { googleAuthConfig, googleAuthValidationSchema } from './common/config/go
         awsConfig,
         elasticConfig,
         emailManagerConfig,
-        googleAuthConfig
+        googleAuthConfig,
+        redisConfig
       ],
       validationSchema:
         serverConfigSchema
@@ -45,6 +48,7 @@ import { googleAuthConfig, googleAuthValidationSchema } from './common/config/go
           .concat(elasticConfigSchema)
           .concat(emailManagerValidationSchema)
           .concat(googleAuthValidationSchema)
+          .concat(redisConfigValidationSchema)
     }),
     PhraseModule,
     UserModule,
@@ -54,7 +58,8 @@ import { googleAuthConfig, googleAuthValidationSchema } from './common/config/go
     DefinitionModule,
     FileModule,
     SearchModule,
-    EmailManagerModule
+    EmailManagerModule,
+    RedisModule
   ],
   controllers: [AppController],
   providers: [AppService],

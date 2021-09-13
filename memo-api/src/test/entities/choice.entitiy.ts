@@ -33,7 +33,9 @@ export class Choice {
   })
   user: User
 
-  @ManyToOne(() => Phrase)
+  @ManyToOne(() => Phrase, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({
     name: 'phraseId'
   })

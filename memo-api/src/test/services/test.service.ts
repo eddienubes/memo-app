@@ -2,7 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Test } from '../entities/test.entity';
@@ -25,7 +25,7 @@ export class TestService {
     private readonly testRepository: Repository<Test>,
     private readonly phraseService: PhraseService,
     private readonly answerService: AnswerService,
-    private readonly choiceService: ChoiceService
+    private readonly choiceService: ChoiceService,
   ) {
   }
 
@@ -34,22 +34,23 @@ export class TestService {
       join: {
         alias: 'test', innerJoinAndSelect: { // key of the field is our alias
           phrase: 'test.phrase',
-          answers: 'test.answers'
+          answers: 'test.answers',
         },
       },
       where: qb => {
         qb.where('phrase.userId = :userId', { userId });
-        if (done) {
+        if (done !== undefined) {
           qb.andWhere('test.done = :done', { done });
         }
       },
     });
+    console.log(tests);
     return tests;
   }
 
   public async findById(id: number, userId: number): Promise<Test> {
     const test = await this.testRepository.findOne(id, {
-      relations: ['phrase', 'answers']
+      relations: ['phrase', 'answers'],
     });
 
     if (!test) {
@@ -89,7 +90,13 @@ export class TestService {
       correctAnswer.definition = phrase.definition.value;
       correctAnswer.valid = true;
 
-      const answersDtos = [...wrongAnswers, correctAnswer];
+      // const answersDtos = [...wrongAnswers, correctAnswer];
+      const randomIndex = Math.floor(Math.random() * wrongAnswers.length);
+      const answersDtos = [
+        ...wrongAnswers.slice(0, randomIndex),
+        correctAnswer,
+        ...wrongAnswers.slice(randomIndex)
+      ];
 
       const answers = await this.answerService.createAnswers(answersDtos);
 
@@ -113,7 +120,7 @@ export class TestService {
       userId,
       testId,
       phraseId: test.phrase.id,
-      answerId: answer.id
+      answerId: answer.id,
     });
 
     if (!answer.valid) {

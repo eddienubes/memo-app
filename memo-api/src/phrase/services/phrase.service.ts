@@ -99,8 +99,10 @@ export class PhraseService {
   public async remove(id: number, userId: number): Promise<Phrase> {
     const phrase = await this.findById(id, userId);
     const result = await this.phraseRepository.remove(phrase);
-    // await this.phraseSearchService.remove(result.id);
-    return result;
+    return {
+      ...result,
+      id
+    };
   }
 
 
