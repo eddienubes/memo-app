@@ -4,10 +4,11 @@ import { ConfigService, ConfigType } from '@nestjs/config';
 import { serverConfig, SERVER_CONFIG_TOKEN } from './common/config/server-config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import { MetadataInterceptor } from './common/interceptors/metadata.interceptor';
 import { config } from 'aws-sdk';
 import { AWS_CONFIG_TOKEN, awsConfig } from './common/config/aws-config';
+import { runInCluster } from './utils/run-in-cluster';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -41,4 +42,4 @@ async function bootstrap() {
   await app.listen(serverConf.port);
 }
 
-bootstrap();
+runInCluster(bootstrap);

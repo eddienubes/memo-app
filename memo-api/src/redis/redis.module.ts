@@ -12,7 +12,7 @@ import * as redisStore from 'cache-manager-redis-store';
         store: redisStore,
         host: configService.redisHost,
         port: configService.redisPort,
-        ttl: 120,
+        ttl: 5,
       }),
     }),
   ],
