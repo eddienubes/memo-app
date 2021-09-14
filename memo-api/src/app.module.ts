@@ -21,6 +21,10 @@ import { EmailManagerModule } from './email-manager/email-manager.module';
 import { googleAuthConfig, googleAuthValidationSchema } from './common/config/google-auth-config';
 import { redisConfig, redisConfigValidationSchema } from './common/config/redis-config';
 import { RedisModule } from './redis/redis.module';
+import { emailConfig, emailConfigValidationSchema } from './common/config/email-config';
+import { EmailModule } from './email/email.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { EmailScheduleModule } from './email-schedule/email-schedule.module';
 
 @Module({
   imports: [
@@ -38,7 +42,8 @@ import { RedisModule } from './redis/redis.module';
         elasticConfig,
         emailManagerConfig,
         googleAuthConfig,
-        redisConfig
+        redisConfig,
+        emailConfig
       ],
       validationSchema:
         serverConfigSchema
@@ -49,6 +54,7 @@ import { RedisModule } from './redis/redis.module';
           .concat(emailManagerValidationSchema)
           .concat(googleAuthValidationSchema)
           .concat(redisConfigValidationSchema)
+          .concat(emailConfigValidationSchema)
     }),
     PhraseModule,
     UserModule,
@@ -59,7 +65,10 @@ import { RedisModule } from './redis/redis.module';
     FileModule,
     SearchModule,
     EmailManagerModule,
-    RedisModule
+    RedisModule,
+    EmailModule,
+    ScheduleModule.forRoot(),
+    EmailScheduleModule
   ],
   controllers: [AppController],
   providers: [AppService],
