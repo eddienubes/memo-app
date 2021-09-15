@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService, ConfigType } from '@nestjs/config';
-import { authConfig } from '../config/auth-config';
+import { authConfig } from '../../common/config/auth-config';
 import { UserService } from '../../user/services/user.service';
 import { Request } from 'express';
 import { ITokenPayload } from '../interfaces/token-payload.interface';
@@ -25,6 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // gets invoked after JWT access has been decoded
   async validate(payload: ITokenPayload): Promise<User> {
+    // return undefined;
     return this.userService.findById(payload.userId);
   }
 }

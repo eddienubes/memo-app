@@ -17,6 +17,7 @@ import { Answer } from './entities/answer.entity';
 import { Test } from './entities/test.entity';
 import { FindTestsQueryDto } from './dtos/find-tests-query.dto';
 import { CleanupInterceptor } from '../common/interceptors/cleanup.interceptor';
+import { JwtTwoFactorGuard } from '../auth/guards/jwt-two-factor-guard.service';
 
 @Controller('test')
 export class TestController {
@@ -25,7 +26,7 @@ export class TestController {
   ) {
   }
 
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @UseInterceptors(CleanupInterceptor)
   @Get()
   async findAll(@Req() req: IRequestWithUser, @Query() dto: FindTestsQueryDto): Promise<Test[]> {
@@ -33,21 +34,21 @@ export class TestController {
     return this.testsService.findAll(req.user.id, dto.done);
   }
 
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @UseInterceptors(CleanupInterceptor)
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: IRequestWithUser): Promise<Test> {
     return this.testsService.findById(id, req.user.id);
   }
 
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @UseInterceptors(CleanupInterceptor)
   @Post()
   async createTests(@Query() createTestDto: CreateTestQueryDto, @Req() req: IRequestWithUser): Promise<Test[]> {
     return this.testsService.createTests(createTestDto, req.user.id); // TODO: Mask answers' IDs
   }
 
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @Post(':tid/answer/:aid')
   answerToTest(
     @Param('tid', ParseIntPipe) testId: number, // TODO: Restrict maximum number client can send as an id

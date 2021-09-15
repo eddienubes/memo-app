@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import Mail from 'nodemailer/lib/mailer';
 import { ConfigType } from '@nestjs/config';
 import { emailConfig } from '../../common/config/email-config';
@@ -9,6 +9,7 @@ export class EmailService {
   private nodemailerTransport: Mail;
 
   constructor(
+    @Inject(emailConfig.KEY)
     private readonly configService: ConfigType<typeof emailConfig>
   ) {
     this.nodemailerTransport = createTransport({

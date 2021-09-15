@@ -18,6 +18,7 @@ import { Express } from 'express';
 import { PublicFile } from '../file/entities/public-file.entity';
 import { ParseFilePipe } from '../file/pipes/parse-file.pipe';
 import { IPrivateFileWithUrlRO } from '../file/interfaces/private-file.ro.interface';
+import { JwtTwoFactorGuard } from '../auth/guards/jwt-two-factor-guard.service';
 
 @Controller('user')
 export class UserController {
@@ -27,20 +28,20 @@ export class UserController {
   }
 
   @Post('avatar')
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @UseInterceptors(FileInterceptor('avatar'))
   public async addAvatar(@Req() req: IRequestWithUser, @UploadedFile(new ParseFilePipe('image', 5)) file: Express.Multer.File) {
     return this.userService.addAvatar({ buffer: file.buffer, filename: file.originalname }, req.user.id);
   }
 
   @Delete('avatar')
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtTwoFactorGuard)
   public async removeAvatar(@Req() req: IRequestWithUser): Promise<PublicFile> {
     return this.userService.removeAvatar(req.user.id);
   }
 
   @Post('file')
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtTwoFactorGuard)
   @UseInterceptors(FileInterceptor('file'))
   public async addPrivateFile(@Req() req: IRequestWithUser, @UploadedFile(new ParseFilePipe('image', 5)) file: Express.Multer.File) {
     return this.userService.addPrivateFile({
@@ -50,7 +51,7 @@ export class UserController {
   }
 
   @Get('file/:id')
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtTwoFactorGuard)
   public async getPrivateFile(
     @Req() req: IRequestWithUser,
     @Param('id', ParseIntPipe) fileId: number
@@ -60,7 +61,7 @@ export class UserController {
   }
 
   @Get('file')
-  @UseGuards(JwtAccessGuard)
+  @UseGuards(JwtTwoFactorGuard)
   public async getPrivateFiles(
     @Req() req: IRequestWithUser
   ): Promise<IPrivateFileWithUrlRO[]> {

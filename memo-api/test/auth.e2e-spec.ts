@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { User } from '../src/user/entities/user.entity';
 import { mockedUser } from './mocks/mocked-data';
-import { AuthController } from '../src/auth/auth.controller';
+import { AuthController } from '../src/auth/controllers/auth.controller';
 import { Test } from '@nestjs/testing';
 import { AuthService } from '../src/auth/services/auth.service';
 import { UserService } from '../src/user/services/user.service';

@@ -9,7 +9,7 @@ import { PhraseModule } from './phrase/phrase.module';
 import { UserModule } from './user/user.module';
 import { TestModule } from './test/test.module';
 import { AuthModule } from './auth/auth.module';
-import { authConfig, authConfigSchema } from './auth/config/auth-config';
+import { authConfig, authConfigSchema } from './common/config/auth-config';
 import { ExampleModule } from './example/example.module';
 import { DefinitionModule } from './definition/definition.module';
 import { awsConfig, awsConfigSchema } from './common/config/aws-config';
@@ -25,6 +25,7 @@ import { emailConfig, emailConfigValidationSchema } from './common/config/email-
 import { EmailModule } from './email/email.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EmailScheduleModule } from './email-schedule/email-schedule.module';
+import { EmailConfirmationModule } from './email-confirmation/email-confirmation.module';
 
 @Module({
   imports: [
@@ -68,7 +69,8 @@ import { EmailScheduleModule } from './email-schedule/email-schedule.module';
     RedisModule,
     EmailModule,
     ScheduleModule.forRoot(),
-    EmailScheduleModule
+    EmailScheduleModule,
+    EmailConfirmationModule
   ],
   controllers: [AppController],
   providers: [AppService],

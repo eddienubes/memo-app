@@ -42,4 +42,5 @@ async function bootstrap() {
   await app.listen(serverConf.port);
 }
 
-runInCluster(bootstrap);
+bootstrap();
+// runInCluster(bootstrap);

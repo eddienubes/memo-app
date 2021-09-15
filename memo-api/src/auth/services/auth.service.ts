@@ -5,7 +5,7 @@ import { RegisterDto } from '../dtos/register.dto';
 import { User } from '../../user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService, ConfigType } from '@nestjs/config';
-import { authConfig } from '../config/auth-config';
+import { authConfig } from '../../common/config/auth-config';
 import { ITokenPayload } from '../interfaces/token-payload.interface';
 
 @Injectable()
@@ -22,8 +22,8 @@ export class AuthService {
     return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
   }
 
-  public getCookieWithJwtAccessToken(userId: number): string {
-    const payload: ITokenPayload = { userId };
+  public getCookieWithJwtAccessToken(userId: number, isTwoFactorAuthEnabled = false): string {
+    const payload: ITokenPayload = { userId, isTwoFactorAuthEnabled };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.jwtAccessTokenSecret,
       expiresIn: this.configService.jwtAccessTokenExpirationTime

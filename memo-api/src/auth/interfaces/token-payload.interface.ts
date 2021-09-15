@@ -1,3 +1,4 @@
 export interface ITokenPayload {
-  userId: number
+  userId: number;
+  isTwoFactorAuthEnabled?: boolean;
 }

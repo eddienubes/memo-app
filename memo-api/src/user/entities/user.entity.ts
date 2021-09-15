@@ -53,4 +53,14 @@ export class User {
 
   @Column({ nullable: true })
   googleAvatar?: string;
+
+  @Exclude()
+  @Column({ nullable: true })
+  twoFactorAuthSecret: string;
+
+  @Column({ default: false })
+  isTwoFactorAuthEnabled: boolean;
+
+  @Column({ default: false })
+  isEmailConfirmed: boolean;
 }

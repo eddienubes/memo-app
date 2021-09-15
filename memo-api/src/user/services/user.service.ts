@@ -3,7 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
@@ -15,7 +15,7 @@ import { PublicFile } from '../../file/entities/public-file.entity';
 import { PrivateFile } from '../../file/entities/private-file.entity';
 import { PrivateFileService } from '../../file/services/private-file.service';
 import { IPrivateFileRO, IPrivateFileWithUrlRO } from '../../file/interfaces/private-file.ro.interface';
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -25,7 +25,7 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     private readonly publicFileService: PublicFileService,
     private readonly privateFileService: PrivateFileService,
-    private readonly connection: Connection
+    private readonly connection: Connection,
   ) {
   }
 
@@ -52,7 +52,7 @@ export class UserService {
 
   public async create(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.userRepository.findOne({
-      email: createUserDto.email
+      email: createUserDto.email,
     });
 
     if (existingUser) {
@@ -71,7 +71,7 @@ export class UserService {
     if (user.avatar) {
       await this.userRepository.update(userId, {
         ...user,
-        avatar: null
+        avatar: null,
       });
 
       await this.publicFileService.deletePublicFile(user.avatar.id);
@@ -81,7 +81,7 @@ export class UserService {
 
     await this.userRepository.update(userId, {
       ...user,
-      avatar
+      avatar,
     });
 
     // TODO: Compress image or check the size
@@ -107,7 +107,7 @@ export class UserService {
     try {
       await queryRunner.manager.update(User, userId, {
         ...user,
-        avatar: null
+        avatar: null,
       });
 
       publicFile = await this.publicFileService.deletePublicFileWithQueryRunner(fileId, queryRunner);
@@ -140,7 +140,7 @@ export class UserService {
   public async getAllPrivateFiles(userId: number): Promise<IPrivateFileWithUrlRO[]> {
     const userWithFiles = await this.userRepository.findOne(
       { id: userId },
-      { relations: ['files'] }
+      { relations: ['files'] },
     );
 
     if (!userWithFiles) {
@@ -152,16 +152,16 @@ export class UserService {
         const url = await this.privateFileService.generatePrivateUrl(file.key);
         return {
           file,
-          url
-        }
-      })
+          url,
+        };
+      }),
     );
   }
 
   public async setCurrentRefreshToken(refreshToken: string, userId: number): Promise<void> {
     const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
     await this.userRepository.update(userId, {
-      currentHashedRefreshToken
+      currentHashedRefreshToken,
     });
   }
 
@@ -170,7 +170,7 @@ export class UserService {
 
     const isValid = await bcrypt.compare(
       refreshToken,
-      user.currentHashedRefreshToken
+      user.currentHashedRefreshToken,
     );
     console.log(isValid, user);
     if (isValid) {
@@ -185,9 +185,21 @@ export class UserService {
       email,
       username,
       isRegisteredWithGoogle: true,
-      googleAvatar: avatarUrl
+      googleAvatar: avatarUrl,
     });
 
     return this.userRepository.save(newUser);
+  }
+
+  public async setTwoFactorAuthSecret(secret: string, userId: number) {
+    return this.userRepository.update(userId, {
+      twoFactorAuthSecret: secret,
+    });
+  }
+
+  public async turnOnTwoFactorAuth(userId: number) {
+    return this.userRepository.update(userId, {
+      isTwoFactorAuthEnabled: true,
+    });
   }
 }
