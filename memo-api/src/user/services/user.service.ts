@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -200,6 +199,12 @@ export class UserService {
   public async turnOnTwoFactorAuth(userId: number) {
     return this.userRepository.update(userId, {
       isTwoFactorAuthEnabled: true,
+    });
+  }
+
+  async markEmailAsConfirmed(email: string) {
+    return this.userRepository.update({ email }, {
+      isEmailConfirmed: true,
     });
   }
 }

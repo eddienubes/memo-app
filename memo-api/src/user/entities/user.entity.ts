@@ -5,6 +5,10 @@ import { Exclude } from 'class-transformer';
 import { PublicFile } from '../../file/entities/public-file.entity';
 import { PrivateFile } from '../../file/entities/private-file.entity';
 
+export enum Roles {
+  ADMIN = 'ADMIN',
+  PUBLIC = 'PUBLIC'
+}
 
 @Entity('user')
 export class User {
@@ -17,7 +21,7 @@ export class User {
   email: string;
 
   @Index()
-  @Column({ unique: true })
+  @Column({ unique: false })
   username: string;
 
   @Exclude()
@@ -63,4 +67,12 @@ export class User {
 
   @Column({ default: false })
   isEmailConfirmed: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: Roles,
+    default: [Roles.PUBLIC],
+    array: true
+  })
+  roles: Roles[]
 }

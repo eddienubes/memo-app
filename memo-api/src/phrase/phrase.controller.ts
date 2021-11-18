@@ -1,5 +1,6 @@
 import {
   Body,
+  CacheInterceptor,
   Controller,
   Delete,
   Get,
@@ -17,12 +18,13 @@ import { PhraseService } from './services/phrase.service';
 import { PaginationQueryDto } from './dtos/pagination-query.dto';
 import { RemovePhraseDto } from './dtos/remove-phrase.dto';
 import { UpdatePhraseDto } from './dtos/update-phrase.dto';
-import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { IRequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { CreateExampleDto } from '../example/dtos/create-example.dto';
-import { CacheInterceptor } from '@nestjs/common';
 import { PhraseType } from './entities/phrase.entity';
-import {JwtTwoFactorGuard} from '../auth/guards/jwt-two-factor-guard.service';
+import { JwtTwoFactorGuard } from '../auth/guards/jwt-two-factor-guard.service';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { RolesMetadata } from '../common/decorators/roles.decorator';
+import { Roles } from '../user/entities/user.entity';
 
 @Controller('phrase')
 @UseInterceptors(CacheInterceptor)
@@ -55,7 +57,8 @@ export class PhraseController {
     return this.phrasesService.searchForPhrases(by, req.user.id);
   }
 
-  @UseGuards(JwtTwoFactorGuard)
+  @UseGuards(JwtTwoFactorGuard, RolesGuard)
+  @RolesMetadata(Roles.ADMIN)
   @Post()
   create(@Body() createPhraseDto: CreatePhraseDto, @Req() req: IRequestWithUser) {
     return this.phrasesService.create(createPhraseDto, req.user.id);

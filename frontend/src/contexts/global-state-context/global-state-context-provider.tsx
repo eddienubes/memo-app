@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useReducer, useState } from 'react';
-import GlobalStateContext, { Actions, IGlobalState, IGlobalStateContext } from './global-state-context';
+import GlobalStateContext, { Actions, IGlobalState } from './global-state-context';
 import ServicesContext from '../service-context/service-context';
 import { LinearProgress } from '@mui/material';
 

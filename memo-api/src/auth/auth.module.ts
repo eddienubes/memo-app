@@ -14,6 +14,7 @@ import { googleAuthConfig } from '../common/config/google-auth-config';
 import { TwoFactorAuthController } from './controllers/two-factor-auth.controller';
 import { TwoFactorAuthService } from './services/two-factor-auth.service';
 import { JwtTwoFactorStrategy } from './strategies/jwt-two-factor.strategy';
+import { EmailConfirmationModule } from '../email-confirmation/email-confirmation.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { JwtTwoFactorStrategy } from './strategies/jwt-two-factor.strategy';
           expiresIn: configService.jwtAccessTokenExpirationTime
         }
       })
-    })
+    }),
+    EmailConfirmationModule
   ],
   providers: [
     AuthService,

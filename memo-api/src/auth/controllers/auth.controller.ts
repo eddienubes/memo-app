@@ -12,6 +12,7 @@ import { JwtRefreshGuard } from '../guards/jwt-refresh.guard';
 import { TokenVerificationDto } from '../dtos/token-verification.dto';
 import { GoogleAuthService } from '../services/google-auth.service';
 import { JwtTwoFactorGuard } from '../guards/jwt-two-factor-guard.service';
+import { EmailConfirmationService } from '../../email-confirmation/email-confirmation.service';
 
 @Controller('auth')
 export class AuthController {
@@ -19,13 +20,16 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly googleAuthService: GoogleAuthService,
+    private readonly emailConfirmationService: EmailConfirmationService,
   ) {
   }
 
   @UseInterceptors(CleanupInterceptor)
   @Post('signup')
   async signUp(@Body() registrationData: RegisterDto): Promise<User> {
-    return this.authService.register(registrationData);
+    const user = await this.authService.register(registrationData);
+    await this.emailConfirmationService.sendVerificationLink(user.email);
+    return user;
   }
 
   @HttpCode(200)

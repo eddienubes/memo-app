@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EmailConfirmationController } from './email-confirmation.controller';
+import { EmailConfirmationController } from '../email-confirmation.controller';
 
 describe('EmailConfirmationController', () => {
   let controller: EmailConfirmationController;

@@ -2,17 +2,14 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Divider, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -23,7 +20,9 @@ interface IProps {
   type: string;
   createdAt: string;
   definition: string;
-  examples: { value: string; id: number }[]
+  examples: { value: string; id: number }[],
+  handleDelete: (id: number) => void;
+  id: number;
 }
 
 const ExpandMore = styled((props: ExpandMoreProps) => {
@@ -37,15 +36,6 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-  >
-    •
-  </Box>
-);
-
 
 const PhraseCard: React.FC<IProps> = (props) => {
   const [expanded, setExpanded] = React.useState(false);
@@ -55,7 +45,9 @@ const PhraseCard: React.FC<IProps> = (props) => {
     type,
     createdAt,
     definition,
-    examples
+    examples,
+    handleDelete,
+    id
   } = props;
 
   const handleExpandClick = () => {
@@ -80,12 +72,15 @@ const PhraseCard: React.FC<IProps> = (props) => {
             {definition}
             <br/>
           </Typography>
-          <Divider sx={{margin: '2% 0'}}/>
+          <Divider sx={{ margin: '2% 0' }}/>
           <Typography variant="body2">
             Created at: <i>{createdAt}</i>
           </Typography>
         </CardContent>
-        <CardActions>
+        <CardActions sx={{display: 'flex', justifyContent: 'space-between'}}>
+          <Button onClick={() => handleDelete(id)} sx={{ width: '30px', height: '30px', minWidth: '30px', borderRadius: '50%' }} variant="outlined">
+            <CloseIcon/>
+          </Button>
           <ExpandMore
             expand={expanded}
             onClick={handleExpandClick}

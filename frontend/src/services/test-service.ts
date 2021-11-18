@@ -7,7 +7,10 @@ export default class TestService {
   async findTests(): Promise<Test[]> {
     try {
       const { data } = await axios.get(this.baseUrl, {
-        withCredentials: true
+        withCredentials: true,
+        params: {
+          done: false
+        }
       });
 
       return data.data;

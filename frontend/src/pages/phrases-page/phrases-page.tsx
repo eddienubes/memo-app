@@ -3,7 +3,6 @@ import PhraseCard from '../../components/phrase-card';
 import { CircularProgress, Grid } from '@mui/material';
 import { Phrase } from '../../common/types/data';
 import ServicesContext from '../../contexts/service-context/service-context';
-import ErrorIndicator from '../../components/error-indicator';
 import CreatePhraseModal from '../../components/create-phrase-modal';
 import FloatingButton from '../../components/floating-button';
 import GlobalStateContext from "../../contexts/global-state-context/global-state-context";
@@ -127,6 +126,29 @@ const PhrasesPage = () => {
 
   }, [dispatchGlobalState, phrasesService]);
 
+  const deletePhraseHandler = (id: number) => {
+    dispatchGlobalState({type: 'setBackGroundLoading', payload: true});
+    phrasesService
+      .delete(id)
+      .then(phrase => {
+        setPhrases(state => {
+          const index = state.findIndex(p => p.id === phrase.id);
+          console.log('PHRASE', phrase);
+          console.log('INDEX', index);
+          return [
+            ...state.slice(0, index),
+            ...state.slice(index + 1)
+          ]
+        });
+        dispatchGlobalState({type: 'setBackGroundLoading', payload: false});
+        dispatchGlobalState({ type: 'setNotification', payload: 'Successfully deleted a phrase!' });
+      })
+      .catch(e => {
+        dispatchGlobalState({ type: 'setError', payload: e });
+        dispatchGlobalState({type: 'setBackGroundLoading', payload: false});
+      });
+  }
+
   const handleFormSubmit: FormEventHandler = (event) => {
     dispatchForm({ type: 'reset', payload: initialState });
     dispatchGlobalState({ type: 'setBackGroundLoading', payload: true });
@@ -167,6 +189,8 @@ const PhrasesPage = () => {
             return (
               <Grid item xs key={phrase.id + 'phrase'}>
                 <PhraseCard
+                  id={phrase.id}
+                  handleDelete={deletePhraseHandler}
                   phrase={phrase.value}
                   type={phrase.type}
                   definition={phrase.definition.value}

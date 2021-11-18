@@ -26,6 +26,7 @@ const Test: React.FC<IProps> = ({ test }) => {
   const [answerId, setAnswerId] = useState<number | null>(null);
   const { testService } = useContext(ServicesContext);
   const { state, dispatch } = useContext(GlobalStateContext);
+  const [correct, setCorrect] = useState<boolean | null>(null);
 
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnswerId(+e.target.value);
@@ -35,12 +36,18 @@ const Test: React.FC<IProps> = ({ test }) => {
     e.preventDefault();
 
     testService
-      .answer(answerId, test.id)
-      .then(answer => dispatch({ type: 'setNotification', payload: 'Correct' }))
-      .catch(e => dispatch({ type: 'setError', payload: e }));
+      .answer(answerId!, test.id)
+      .then(answer => {
+        dispatch({ type: 'setNotification', payload: 'Correct' })
+        setCorrect(true);
+      })
+      .catch(e => {
+        dispatch({ type: 'setError', payload: e });
+        setCorrect(false);
+      });
   }
 
-  const border = test.done ? '1px solid green' : '1px solid red';
+  const border = correct === null ? 'none' : correct ? '1px solid green' : '1px solid red';
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>

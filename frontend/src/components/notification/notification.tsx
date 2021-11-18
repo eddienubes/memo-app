@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Grid, Box, Alert, Fade } from "@mui/material";
+import { Box, Alert, Fade } from "@mui/material";
 import GlobalStateContext from "../../contexts/global-state-context/global-state-context";
 
-const timer = null;
 
 const Notification = () => {
   const { dispatch: dispatchGS, state } = useContext(GlobalStateContext);

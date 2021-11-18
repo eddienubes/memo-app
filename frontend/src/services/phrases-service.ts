@@ -49,4 +49,16 @@ export default class PhrasesService {
       throw e;
     }
   }
+
+  async delete(phraseId: number): Promise<Phrase> {
+    try {
+      const { data } = await axios.delete(`${this.baseUrl}/${phraseId}`, {
+        withCredentials: true
+      });
+      
+      return data.data;
+    } catch (e) {
+      throw e;
+    }
+  }
 }
