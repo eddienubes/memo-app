@@ -171,7 +171,7 @@ export class UserService {
       refreshToken,
       user.currentHashedRefreshToken,
     );
-    console.log(isValid, user);
+
     if (isValid) {
       return user;
     }

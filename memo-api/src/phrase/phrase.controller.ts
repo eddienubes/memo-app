@@ -58,6 +58,7 @@ export class PhraseController {
   }
 
   @UseGuards(JwtTwoFactorGuard, RolesGuard)
+  // @UseGuards(JwtTwoFactorGuard)
   @RolesMetadata(Roles.ADMIN)
   @Post()
   create(@Body() createPhraseDto: CreatePhraseDto, @Req() req: IRequestWithUser) {
