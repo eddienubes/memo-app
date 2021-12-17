@@ -1,4 +1,4 @@
-import { User } from '../../src/user/entities/user.entity';
+import { Roles, User } from '../../src/user/entities/user.entity';
 
 export const mockedUser: User = {
   id: 1,
@@ -7,4 +7,10 @@ export const mockedUser: User = {
   password: 'heyweasdcxzc',
   phrases: [],
   choices: [],
+  files: [],
+  isRegisteredWithGoogle: false,
+  isEmailConfirmed: true,
+  isTwoFactorAuthEnabled: false,
+  twoFactorAuthSecret: 'secret',
+  roles: [Roles.PUBLIC],
 };

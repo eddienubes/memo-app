@@ -34,11 +34,14 @@ export class AuthService {
     return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.jwtAccessTokenExpirationTime}`;
   }
 
-  public getCookieWithJwtRefreshToken(userId: number): {
+  public getCookieWithJwtRefreshToken(
+    userId: number,
+    isTwoFactorAuthEnabled = false,
+  ): {
     cookie: string;
     token: string;
   } {
-    const payload: ITokenPayload = { userId };
+    const payload: ITokenPayload = { userId, isTwoFactorAuthEnabled };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.jwtRefreshTokenSecret,
       expiresIn: this.configService.jwtRefreshTokenExpirationTime,

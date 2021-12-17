@@ -81,7 +81,12 @@ export class TwoFactorAuthController {
       true,
     );
 
-    res.setHeader('Set-Cookie', [accessTokenCookie]);
+    const { cookie: refreshCookie, token: refreshToken } =
+      this.authService.getCookieWithJwtRefreshToken(req.user.id);
+
+    await this.userService.setCurrentRefreshToken(refreshToken, req.user.id);
+
+    res.setHeader('Set-Cookie', [accessTokenCookie, refreshCookie]);
 
     return req.user;
   }

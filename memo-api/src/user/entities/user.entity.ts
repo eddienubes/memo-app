@@ -40,7 +40,9 @@ export class User {
   })
   phrases: Phrase[];
 
-  @OneToMany(() => Choice, (log) => log.user)
+  @OneToMany(() => Choice, (log) => log.user, {
+    onDelete: 'CASCADE', // Changed
+  })
   choices: Choice[];
 
   @OneToOne(() => PublicFile, {

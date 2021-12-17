@@ -12,7 +12,7 @@ export const databaseConfig = registerAs(DATABASE_CONFIG_TOKEN, () => {
     username: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
-    synchronize: true, // important
+    synchronize: true, // TODO Remove
     autoLoadEntities: true,
   };
   return config;

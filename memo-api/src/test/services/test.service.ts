@@ -74,6 +74,7 @@ export class TestService {
     const lowRatedPhrases =
       await this.phraseService.getLowestRatedPhrasesByType(createTestDto.type);
 
+    // TODO Might be an error, when there are multiple answers exist
     let phrases: Phrase[];
     if (lowRatedPhrases.length < this.MAX_TESTS_AMOUNT) {
       phrases = await this.phraseService.findAll(
@@ -81,6 +82,9 @@ export class TestService {
         userId,
       );
     }
+    // else {
+    //   phrases = lowRatedPhrases;
+    // }
 
     if (phrases.length < this.MAX_TESTS_AMOUNT) {
       throw new BadRequestException(

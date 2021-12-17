@@ -47,6 +47,7 @@ import { EmailModule } from './email/email.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EmailScheduleModule } from './email-schedule/email-schedule.module';
 import { EmailConfirmationModule } from './email-confirmation/email-confirmation.module';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { EmailConfirmationModule } from './email-confirmation/email-confirmation
     ScheduleModule.forRoot(),
     EmailScheduleModule,
     EmailConfirmationModule,
+    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
