@@ -9,8 +9,7 @@ export class ChoiceService {
   constructor(
     @InjectRepository(Choice)
     private readonly choiceRepository: Repository<Choice>,
-  ) {
-  }
+  ) {}
 
   create(choice: IChoice): Promise<Choice> {
     const choiceObj = this.choiceRepository.create(choice);

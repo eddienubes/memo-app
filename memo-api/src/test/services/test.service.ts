@@ -26,18 +26,19 @@ export class TestService {
     private readonly phraseService: PhraseService,
     private readonly answerService: AnswerService,
     private readonly choiceService: ChoiceService,
-  ) {
-  }
+  ) {}
 
   public async findAll(userId: number, done?: boolean): Promise<Test[]> {
     const tests = await this.testRepository.find({
       join: {
-        alias: 'test', innerJoinAndSelect: { // key of the field is our alias
+        alias: 'test',
+        innerJoinAndSelect: {
+          // key of the field is our alias
           phrase: 'test.phrase',
           answers: 'test.answers',
         },
       },
-      where: qb => {
+      where: (qb) => {
         qb.where('phrase.userId = :userId', { userId });
         if (done !== undefined) {
           qb.andWhere('test.done = :done', { done });
@@ -58,33 +59,49 @@ export class TestService {
     }
 
     if (test.phrase.userId !== userId) {
-      throw new UnauthorizedException(`You are not allowed to manage this test!`);
+      throw new UnauthorizedException(
+        `You are not allowed to manage this test!`,
+      );
     }
 
     return test;
   }
 
-  public async createTests(createTestDto: CreateTestQueryDto, userId: number): Promise<Test[]> {
-    const lowRatedPhrases = await this.phraseService.getLowestRatedPhrasesByType(createTestDto.type);
+  public async createTests(
+    createTestDto: CreateTestQueryDto,
+    userId: number,
+  ): Promise<Test[]> {
+    const lowRatedPhrases =
+      await this.phraseService.getLowestRatedPhrasesByType(createTestDto.type);
 
     let phrases: Phrase[];
     if (lowRatedPhrases.length < this.MAX_TESTS_AMOUNT) {
-      phrases = await this.phraseService.findAll({ limit: this.MAX_TESTS_AMOUNT, offset: undefined }, userId);
+      phrases = await this.phraseService.findAll(
+        { limit: this.MAX_TESTS_AMOUNT, offset: undefined },
+        userId,
+      );
     }
 
     if (phrases.length < this.MAX_TESTS_AMOUNT) {
-      throw new BadRequestException(`You should have at least 5 phrases of the same type to create a test!`);
+      throw new BadRequestException(
+        `You should have at least 5 phrases of the same type to create a test!`,
+      );
     }
 
-    const testsPromises: Promise<Test>[] = phrases.map(async phrase => {
-      const wrongPhrases = await this.phraseService.getRandomPhrasesExceptForId(phrase.id, createTestDto.type);
+    const testsPromises: Promise<Test>[] = phrases.map(async (phrase) => {
+      const wrongPhrases = await this.phraseService.getRandomPhrasesExceptForId(
+        phrase.id,
+        createTestDto.type,
+      );
 
-      const wrongAnswers: CreateAnswerDto[] = wrongPhrases.map(wrongPhrase => {
-        const wrongAnswer = new Answer();
-        wrongAnswer.definition = wrongPhrase.definition.value;
-        wrongAnswer.valid = false;
-        return wrongAnswer;
-      });
+      const wrongAnswers: CreateAnswerDto[] = wrongPhrases.map(
+        (wrongPhrase) => {
+          const wrongAnswer = new Answer();
+          wrongAnswer.definition = wrongPhrase.definition.value;
+          wrongAnswer.valid = false;
+          return wrongAnswer;
+        },
+      );
 
       const correctAnswer = new CreateAnswerDto();
       correctAnswer.definition = phrase.definition.value;
@@ -95,7 +112,7 @@ export class TestService {
       const answersDtos = [
         ...wrongAnswers.slice(0, randomIndex),
         correctAnswer,
-        ...wrongAnswers.slice(randomIndex)
+        ...wrongAnswers.slice(randomIndex),
       ];
 
       const answers = await this.answerService.createAnswers(answersDtos);
@@ -110,9 +127,16 @@ export class TestService {
     return Promise.all(testsPromises);
   }
 
-
-  public async answerToTest(testId: number, answerId: number, userId: number): Promise<Answer> {
-    const answer = await this.answerService.findAnswerById(testId, answerId, userId);
+  public async answerToTest(
+    testId: number,
+    answerId: number,
+    userId: number,
+  ): Promise<Answer> {
+    const answer = await this.answerService.findAnswerById(
+      testId,
+      answerId,
+      userId,
+    );
 
     const test = await this.findById(testId, userId);
 
@@ -137,6 +161,4 @@ export class TestService {
 
     return answer;
   }
-
-
 }

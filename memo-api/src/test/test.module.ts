@@ -10,11 +10,8 @@ import { AnswerService } from './services/answer.service';
 import { ChoiceService } from './services/choice.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Answer, Test, Choice]),
-    PhraseModule
-  ],
+  imports: [TypeOrmModule.forFeature([Answer, Test, Choice]), PhraseModule],
   controllers: [TestController],
-  providers: [TestService, AnswerService, ChoiceService]
+  providers: [TestService, AnswerService, ChoiceService],
 })
 export class TestModule {}

@@ -4,15 +4,14 @@ import { Observable } from 'rxjs';
 import { IRequestWithUser } from '../../auth/interfaces/request-with-user.interface';
 import { Roles } from '../../user/entities/user.entity';
 
-
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {
+  constructor(private reflector: Reflector) {}
 
-  }
-
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    const roles = this.reflector.get<Roles[]>('roles', context.getHandler())
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+    const roles = this.reflector.get<Roles[]>('roles', context.getHandler());
 
     if (!roles) {
       return true;

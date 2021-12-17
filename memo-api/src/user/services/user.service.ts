@@ -13,20 +13,21 @@ import { CreateFileDto } from '../../file/dtos/create-file.dto';
 import { PublicFile } from '../../file/entities/public-file.entity';
 import { PrivateFile } from '../../file/entities/private-file.entity';
 import { PrivateFileService } from '../../file/services/private-file.service';
-import { IPrivateFileRO, IPrivateFileWithUrlRO } from '../../file/interfaces/private-file.ro.interface';
+import {
+  IPrivateFileRO,
+  IPrivateFileWithUrlRO,
+} from '../../file/interfaces/private-file.ro.interface';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly publicFileService: PublicFileService,
     private readonly privateFileService: PrivateFileService,
     private readonly connection: Connection,
-  ) {
-  }
+  ) {}
 
   public async findById(id: number): Promise<User> {
     const user = await this.userRepository.findOne(id);
@@ -42,12 +43,13 @@ export class UserService {
     const user = await this.userRepository.findOne({ email });
 
     if (!user) {
-      throw new NotFoundException(`User with email ${email} has not been found`);
+      throw new NotFoundException(
+        `User with email ${email} has not been found`,
+      );
     }
 
     return user;
   }
-
 
   public async create(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.userRepository.findOne({
@@ -64,7 +66,10 @@ export class UserService {
     return this.userRepository.save(newUser);
   }
 
-  public async addAvatar(createFileDto: CreateFileDto, userId: number): Promise<PublicFile> {
+  public async addAvatar(
+    createFileDto: CreateFileDto,
+    userId: number,
+  ): Promise<PublicFile> {
     const user = await this.findById(userId);
 
     if (user.avatar) {
@@ -109,12 +114,15 @@ export class UserService {
         avatar: null,
       });
 
-      publicFile = await this.publicFileService.deletePublicFileWithQueryRunner(fileId, queryRunner);
+      publicFile = await this.publicFileService.deletePublicFileWithQueryRunner(
+        fileId,
+        queryRunner,
+      );
 
       await queryRunner.commitTransaction();
     } catch (e) {
       await queryRunner.rollbackTransaction();
-      throw new e;
+      throw new e();
     } finally {
       await queryRunner.release();
     }
@@ -122,11 +130,17 @@ export class UserService {
     return publicFile;
   }
 
-  public async addPrivateFile(createFileDto: CreateFileDto, userId: number): Promise<PrivateFile> {
+  public async addPrivateFile(
+    createFileDto: CreateFileDto,
+    userId: number,
+  ): Promise<PrivateFile> {
     return this.privateFileService.uploadPrivateFile(createFileDto, userId);
   }
 
-  public async getPrivateFile(fileId: number, userId: number): Promise<IPrivateFileRO> {
+  public async getPrivateFile(
+    fileId: number,
+    userId: number,
+  ): Promise<IPrivateFileRO> {
     const file = await this.privateFileService.getPrivateFile(fileId);
 
     if (file.info.owner.id !== userId) {
@@ -136,7 +150,9 @@ export class UserService {
     return file;
   }
 
-  public async getAllPrivateFiles(userId: number): Promise<IPrivateFileWithUrlRO[]> {
+  public async getAllPrivateFiles(
+    userId: number,
+  ): Promise<IPrivateFileWithUrlRO[]> {
     const userWithFiles = await this.userRepository.findOne(
       { id: userId },
       { relations: ['files'] },
@@ -147,7 +163,7 @@ export class UserService {
     }
 
     return Promise.all(
-      userWithFiles.files.map(async file => {
+      userWithFiles.files.map(async (file) => {
         const url = await this.privateFileService.generatePrivateUrl(file.key);
         return {
           file,
@@ -157,14 +173,20 @@ export class UserService {
     );
   }
 
-  public async setCurrentRefreshToken(refreshToken: string, userId: number): Promise<void> {
+  public async setCurrentRefreshToken(
+    refreshToken: string,
+    userId: number,
+  ): Promise<void> {
     const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
     await this.userRepository.update(userId, {
       currentHashedRefreshToken,
     });
   }
 
-  public async findUserIfRefreshTokenMatches(refreshToken: string, userId: number): Promise<User | undefined> {
+  public async findUserIfRefreshTokenMatches(
+    refreshToken: string,
+    userId: number,
+  ): Promise<User | undefined> {
     const user = await this.findById(userId);
 
     const isValid = await bcrypt.compare(
@@ -179,11 +201,16 @@ export class UserService {
     return undefined;
   }
 
-  public async createWithGoogle(email: string, username: string, avatarUrl: string) {
+  public async createWithGoogle(
+    email: string,
+    username: string,
+    avatarUrl: string,
+  ) {
     const newUser = await this.userRepository.create({
       email,
       username,
       isRegisteredWithGoogle: true,
+      isEmailConfirmed: true,
       googleAvatar: avatarUrl,
     });
 
@@ -203,8 +230,11 @@ export class UserService {
   }
 
   async markEmailAsConfirmed(email: string) {
-    return this.userRepository.update({ email }, {
-      isEmailConfirmed: true,
-    });
+    return this.userRepository.update(
+      { email },
+      {
+        isEmailConfirmed: true,
+      },
+    );
   }
 }

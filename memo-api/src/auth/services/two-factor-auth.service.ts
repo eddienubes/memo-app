@@ -13,21 +13,23 @@ export class TwoFactorAuthService {
     private readonly userService: UserService,
     @Inject(googleAuthConfig.KEY)
     private readonly googleConfigService: ConfigType<typeof googleAuthConfig>,
-  ) {
-  }
+  ) {}
 
   public async generateTwoFactorAuthSecret(user: User) {
     const secret = authenticator.generateSecret();
 
-    const otpAuthUrl = authenticator.keyuri(user.email, this.googleConfigService.googleTwoFactorAuthAppName, secret);
+    const otpAuthUrl = authenticator.keyuri(
+      user.email,
+      this.googleConfigService.googleTwoFactorAuthAppName,
+      secret,
+    );
 
     await this.userService.setTwoFactorAuthSecret(secret, user.id);
 
     return {
       secret,
-      otpAuthUrl
-    }
-
+      otpAuthUrl,
+    };
   }
 
   public async pipeQrCodeStream(stream: Response, otpAuthUrl: string) {
@@ -37,7 +39,7 @@ export class TwoFactorAuthService {
   public validateTwoFactorAuthCode(twoFactorAuthCode: string, user: User) {
     return authenticator.verify({
       token: twoFactorAuthCode,
-      secret: user.twoFactorAuthSecret
+      secret: user.twoFactorAuthSecret,
     });
   }
 }

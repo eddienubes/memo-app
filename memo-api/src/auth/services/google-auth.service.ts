@@ -1,10 +1,10 @@
-import { HttpException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { googleAuthConfig } from '../../common/config/google-auth-config';
 import { AuthService } from './auth.service';
 import { Auth, google } from 'googleapis';
 import { UserService } from '../../user/services/user.service';
-import {User} from '../../user/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Injectable()
 export class GoogleAuthService {
@@ -23,6 +23,7 @@ export class GoogleAuthService {
   }
 
   public async authenticate(token: string) {
+    // TODO: Vulnerable to invalid tokens, try catch expected
     const tokenInfo = await this.oauthClient.getTokenInfo(token);
 
     const email = tokenInfo.email;
@@ -33,7 +34,7 @@ export class GoogleAuthService {
       return this.handleRegisteredUser(user);
     } catch (err) {
       if (err.status !== 404) {
-        throw new err;
+        throw new err();
       }
 
       return this.registerUser(token, email);
@@ -45,34 +46,32 @@ export class GoogleAuthService {
       throw new UnauthorizedException();
     }
 
-    const {
-      accessTokenCookie,
-      refreshTokenCookie
-    } = await this.retrieveCookiesForUser(user);
+    const { accessTokenCookie, refreshTokenCookie } =
+      await this.retrieveCookiesForUser(user);
 
     return {
       accessTokenCookie,
       refreshTokenCookie,
-      user
-    }
+      user,
+    };
   }
 
   private async retrieveCookiesForUser(user: User): Promise<{
     accessTokenCookie: string;
     refreshTokenCookie: string;
   }> {
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(user.id);
-    const {
-      cookie: refreshTokenCookie,
-      token: refreshToken
-    } = this.authService.getCookieWithJwtRefreshToken(user.id);
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
+      user.id,
+    );
+    const { cookie: refreshTokenCookie, token: refreshToken } =
+      this.authService.getCookieWithJwtRefreshToken(user.id);
 
     await this.userService.setCurrentRefreshToken(refreshToken, user.id);
 
     return {
       accessTokenCookie,
-      refreshTokenCookie
-    }
+      refreshTokenCookie,
+    };
   }
 
   private async registerUser(token: string, email: string) {
@@ -98,6 +97,4 @@ export class GoogleAuthService {
 
     return userInfoResponse.data;
   }
-
-
 }

@@ -3,7 +3,8 @@ import {
   ConflictException,
   Injectable,
   Logger,
-  NotFoundException, UnauthorizedException
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Phrase, PhraseType } from '../entities/phrase.entity';
@@ -28,39 +29,54 @@ export class PhraseService {
     private readonly phraseRepository: Repository<Phrase>,
     private readonly exampleService: ExampleService,
     private readonly definitionService: DefinitionService,
-    private readonly phraseSearchService: PhraseSearchService
-  ) {
-  }
+    private readonly phraseSearchService: PhraseSearchService,
+  ) {}
 
-  public findAll(paginationDto: PaginationQueryDto, userId: number): Promise<Phrase[]> {
+  public findAll(
+    paginationDto: PaginationQueryDto,
+    userId: number,
+  ): Promise<Phrase[]> {
     return this.phraseRepository.find({
       skip: paginationDto.offset,
       take: paginationDto.limit,
       relations: ['examples', 'definition'],
       where: {
-        userId
-      }
+        userId,
+      },
     });
   }
 
-  public async createExample(phraseId: number, createExampleDto: CreateExampleDto, userId: number) {
+  public async createExample(
+    phraseId: number,
+    createExampleDto: CreateExampleDto,
+    userId: number,
+  ) {
     const existingPhrase = await this.findById(phraseId, userId);
     return this.exampleService.createExample(existingPhrase, createExampleDto);
   }
 
-  public async create(createPhraseDto: CreatePhraseDto, userId: number): Promise<Phrase> {
+  public async create(
+    createPhraseDto: CreatePhraseDto,
+    userId: number,
+  ): Promise<Phrase> {
     const existingPhrase = await this.phraseRepository.findOne({
       value: createPhraseDto.phrase,
       type: createPhraseDto.type,
-      userId
+      userId,
     });
 
     if (existingPhrase) {
-      throw new ConflictException(`Phrase ${createPhraseDto.phrase} already exists!`);
+      throw new ConflictException(
+        `Phrase ${createPhraseDto.phrase} already exists!`,
+      );
     }
 
-    const examples = await this.exampleService.createWithoutPhrase(createPhraseDto.examples);
-    const definition = await this.definitionService.createWithoutPhrase(createPhraseDto.definition);
+    const examples = await this.exampleService.createWithoutPhrase(
+      createPhraseDto.examples,
+    );
+    const definition = await this.definitionService.createWithoutPhrase(
+      createPhraseDto.definition,
+    );
 
     const phrase = new Phrase();
     phrase.value = createPhraseDto.phrase;
@@ -78,7 +94,7 @@ export class PhraseService {
 
   public async findById(id: number, userId?: number): Promise<Phrase> {
     const phrase = await this.phraseRepository.findOne(id, {
-      relations: ['examples', 'definition']
+      relations: ['examples', 'definition'],
     });
 
     if (!phrase) {
@@ -90,7 +106,9 @@ export class PhraseService {
     }
 
     if (phrase.userId !== userId) {
-      throw new UnauthorizedException(`You are not allowed to manage this phrase!`);
+      throw new UnauthorizedException(
+        `You are not allowed to manage this phrase!`,
+      );
     }
 
     return phrase;
@@ -101,37 +119,42 @@ export class PhraseService {
     const result = await this.phraseRepository.remove(phrase);
     return {
       ...result,
-      id
+      id,
     };
   }
 
-
-  public async updatePhrase(id: number, updatePhraseDtp: UpdatePhraseDto, userId: number): Promise<Phrase> {
-    const phrase = await this.findById(id, userId)
+  public async updatePhrase(
+    id: number,
+    updatePhraseDtp: UpdatePhraseDto,
+    userId: number,
+  ): Promise<Phrase> {
+    const phrase = await this.findById(id, userId);
 
     const definition = await this.definitionService.update({
       id: phrase.definition.id,
-      value: updatePhraseDtp.definition
+      value: updatePhraseDtp.definition,
     });
 
     const updatedPhrase = await this.phraseRepository.save({
       ...phrase,
       value: updatePhraseDtp.phrase,
-      type: updatePhraseDtp.type
+      type: updatePhraseDtp.type,
     });
 
     // await this.phraseSearchService.update(updatedPhrase);
 
     return {
       ...updatedPhrase,
-      definition
-    }
+      definition,
+    };
   }
 
   public async getLowestRatedPhrasesByType(type: PhraseType) {
-    const phrases = await this.phraseRepository.createQueryBuilder('phraseId')
-      .where(qb => {
-        const subQuery = qb.subQuery()
+    const phrases = await this.phraseRepository
+      .createQueryBuilder('phraseId')
+      .where((qb) => {
+        const subQuery = qb
+          .subQuery()
           .select('ch."phraseId"')
           .from(Choice, 'ch')
           .innerJoin(Phrase, 'p', 'ch.phraseId = p.id')
@@ -151,19 +174,27 @@ export class PhraseService {
     return phrases;
   }
 
-  async getRandomPhrasesExceptForId(excludedId: number, type: PhraseType, limit = 4): Promise<Phrase[]> {
+  async getRandomPhrasesExceptForId(
+    excludedId: number,
+    type: PhraseType,
+    limit = 4,
+  ): Promise<Phrase[]> {
     const count = await this.phraseRepository
       .createQueryBuilder()
       .where(`id != :excludedId`, { excludedId })
       .andWhere(`type = :type`, { type })
       .getCount();
 
-    if (count < this.MIN_PHRASES_AMOUNT - 1) { // Minus the one we exclude
-      throw new BadRequestException(`You should have at least 5 phrases of the same type to be able to create a test`);
+    if (count < this.MIN_PHRASES_AMOUNT - 1) {
+      // Minus the one we exclude
+      throw new BadRequestException(
+        `You should have at least 5 phrases of the same type to be able to create a test`,
+      );
     }
 
-    let [{ floor: offset }] = await this.phraseRepository
-      .query(`SELECT floor(random() * ${count})`);
+    let [{ floor: offset }] = await this.phraseRepository.query(
+      `SELECT floor(random() * ${count})`,
+    );
 
     // console.log('Before: ', offset);
 
@@ -187,7 +218,7 @@ export class PhraseService {
       relations: ['definition'],
       where: {
         id: Not(excludedId),
-        type
+        type,
       },
       skip: offset,
       take: limit,
@@ -196,17 +227,20 @@ export class PhraseService {
     return phrases;
   }
 
-  public async searchForPhrases(text: string, userId: number): Promise<Phrase[]> {
+  public async searchForPhrases(
+    text: string,
+    userId: number,
+  ): Promise<Phrase[]> {
     const results = await this.phraseSearchService.search(text, userId);
 
-    const ids = results.map(result => result.id);
+    const ids = results.map((result) => result.id);
 
     if (!ids.length) {
       return [];
     }
 
     return this.phraseRepository.find({
-      where: { id: In(ids) }
+      where: { id: In(ids) },
     });
   }
 }

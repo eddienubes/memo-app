@@ -14,6 +14,6 @@ import { PrivateFileService } from './services/private-file.service';
   ],
 
   providers: [PublicFileService, PrivateFileService],
-  exports: [PublicFileService, PrivateFileService]
+  exports: [PublicFileService, PrivateFileService],
 })
 export class FileModule {}

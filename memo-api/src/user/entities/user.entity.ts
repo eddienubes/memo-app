@@ -1,4 +1,12 @@
-import { Column, Entity, Index, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Phrase } from '../../phrase/entities/phrase.entity';
 import { Choice } from '../../test/entities/choice.entitiy';
 import { Exclude } from 'class-transformer';
@@ -7,12 +15,11 @@ import { PrivateFile } from '../../file/entities/private-file.entity';
 
 export enum Roles {
   ADMIN = 'ADMIN',
-  PUBLIC = 'PUBLIC'
+  PUBLIC = 'PUBLIC',
 }
 
 @Entity('user')
 export class User {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -28,12 +35,12 @@ export class User {
   @Column({ length: 2000, nullable: true })
   password?: string;
 
-  @OneToMany(() => Phrase, phrase => phrase.user, {
+  @OneToMany(() => Phrase, (phrase) => phrase.user, {
     onDelete: 'CASCADE',
   })
   phrases: Phrase[];
 
-  @OneToMany(() => Choice, log => log.user)
+  @OneToMany(() => Choice, (log) => log.user)
   choices: Choice[];
 
   @OneToOne(() => PublicFile, {
@@ -43,7 +50,7 @@ export class User {
   @JoinColumn()
   avatar?: PublicFile;
 
-  @OneToMany(() => PrivateFile, privateFile => privateFile.owner)
+  @OneToMany(() => PrivateFile, (privateFile) => privateFile.owner)
   files: PrivateFile[];
 
   @Column({
@@ -72,7 +79,7 @@ export class User {
     type: 'enum',
     enum: Roles,
     default: [Roles.PUBLIC],
-    array: true
+    array: true,
   })
-  roles: Roles[]
+  roles: Roles[];
 }

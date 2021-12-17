@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Phrase } from '../../phrase/entities/phrase.entity';
 import { Answer } from './answer.entity';
@@ -6,7 +12,6 @@ import { Test } from './test.entity';
 
 @Entity('choice')
 export class Choice {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -23,33 +28,33 @@ export class Choice {
   testId: number;
 
   @Column()
-  answerId: number
+  answerId: number;
 
-  @ManyToOne(() => User, user => user.choices, {
-    onDelete: 'CASCADE'
+  @ManyToOne(() => User, (user) => user.choices, {
+    onDelete: 'CASCADE',
   })
   @JoinColumn({
-    name: 'userId'
+    name: 'userId',
   })
-  user: User
+  user: User;
 
   @ManyToOne(() => Phrase, {
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   @JoinColumn({
-    name: 'phraseId'
+    name: 'phraseId',
   })
-  phrase: Phrase
+  phrase: Phrase;
 
   @ManyToOne(() => Test)
   @JoinColumn({
-    name: 'testId'
+    name: 'testId',
   })
-  test: Test
+  test: Test;
 
   @ManyToOne(() => Answer)
   @JoinColumn({
-    name: 'answerId'
+    name: 'answerId',
   })
-  answer: Answer
+  answer: Answer;
 }

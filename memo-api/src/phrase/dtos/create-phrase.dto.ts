@@ -1,4 +1,12 @@
-import { IsArray, IsEmpty, IsEnum, IsString, Length, MaxLength, MinLength } from 'class-validator'
+import {
+  IsArray,
+  IsEmpty,
+  IsEnum,
+  IsString,
+  Length,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { PhraseType } from '../entities/phrase.entity';
 
 export class CreatePhraseDto {
@@ -11,17 +19,19 @@ export class CreatePhraseDto {
   definition: string;
 
   @MaxLength(2000, {
-    each: true
+    each: true,
   })
   @MinLength(5, {
-    each: true
+    each: true,
   })
   @IsString({ each: true })
   @IsArray()
   examples: string[];
 
   @IsEnum(PhraseType, {
-    message: `type field can only contain these values: ${Object.values(PhraseType)}`
+    message: `type field can only contain these values: ${Object.values(
+      PhraseType,
+    )}`,
   })
-  type: PhraseType
+  type: PhraseType;
 }

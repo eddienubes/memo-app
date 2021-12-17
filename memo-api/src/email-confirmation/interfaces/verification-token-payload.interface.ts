@@ -1,5 +1,3 @@
-
-
 export interface IVerificationTokenPayload {
-  email: string
+  email: string;
 }

@@ -14,7 +14,7 @@ export const databaseConfig = registerAs(DATABASE_CONFIG_TOKEN, () => {
     database: process.env.DATABASE_NAME,
     synchronize: true, // important
     autoLoadEntities: true,
-  }
+  };
   return config;
 });
 
@@ -23,5 +23,5 @@ export const databaseConfigSchema = Joi.object({
   DATABASE_PORT: Joi.number().required(),
   DATABASE_USER: Joi.string().required(),
   DATABASE_PASSWORD: Joi.string().required(),
-  DATABASE_NAME: Joi.string().required()
+  DATABASE_NAME: Joi.string().required(),
 });

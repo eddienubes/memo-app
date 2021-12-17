@@ -25,17 +25,17 @@ import { EmailConfirmationModule } from '../email-confirmation/email-confirmatio
     JwtModule.registerAsync({
       imports: [
         ConfigModule.forFeature(authConfig),
-        ConfigModule.forFeature(googleAuthConfig)
+        ConfigModule.forFeature(googleAuthConfig),
       ],
       inject: [authConfig.KEY],
       useFactory: async (configService: ConfigType<typeof authConfig>) => ({
         secret: configService.jwtAccessTokenSecret,
         signOptions: {
-          expiresIn: configService.jwtAccessTokenExpirationTime
-        }
-      })
+          expiresIn: configService.jwtAccessTokenExpirationTime,
+        },
+      }),
     }),
-    EmailConfirmationModule
+    EmailConfirmationModule,
   ],
   providers: [
     AuthService,
@@ -44,9 +44,8 @@ import { EmailConfirmationModule } from '../email-confirmation/email-confirmatio
     JwtRefreshStrategy,
     GoogleAuthService,
     TwoFactorAuthService,
-    JwtTwoFactorStrategy
+    JwtTwoFactorStrategy,
   ],
-  controllers: [AuthController, TwoFactorAuthController]
+  controllers: [AuthController, TwoFactorAuthController],
 })
-export class AuthModule {
-}
+export class AuthModule {}

@@ -6,5 +6,5 @@ export const mockedUser: User = {
   username: 'helloasdasd',
   password: 'heyweasdcxzc',
   phrases: [],
-  choices: []
-}
+  choices: [],
+};

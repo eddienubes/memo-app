@@ -12,18 +12,16 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
       imports: [ConfigModule.forFeature(elasticConfig)],
       inject: [elasticConfig.KEY],
       useFactory: async (configService: ConfigType<typeof elasticConfig>) => ({
-          node: configService.elasticSearchNode,
-          auth: {
-            username: configService.elasticSearchUsername,
-            password: configService.elasticSearchUsername
-          }
-        }
-      )
-    })
+        node: configService.elasticSearchNode,
+        auth: {
+          username: configService.elasticSearchUsername,
+          password: configService.elasticSearchUsername,
+        },
+      }),
+    }),
   ],
   controllers: [SearchController],
   providers: [SearchService],
-  exports: [ElasticsearchModule]
+  exports: [ElasticsearchModule],
 })
-export class SearchModule {
-}
+export class SearchModule {}

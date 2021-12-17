@@ -1,9 +1,7 @@
 import cluster from 'cluster';
 import os from 'os';
 
-export const runInCluster = (
-  bootstrap: () => Promise<void>,
-) => {
+export const runInCluster = (bootstrap: () => Promise<void>) => {
   const numberOfCores = os.cpus().length;
 
   if (cluster.isMaster) {
@@ -13,4 +11,4 @@ export const runInCluster = (
   } else {
     bootstrap();
   }
-}
+};

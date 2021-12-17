@@ -1,4 +1,9 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -9,8 +14,6 @@ export class MetadataInterceptor implements NestInterceptor {
 
     return next
       .handle()
-      .pipe(
-        map(data => ({ data, stint: `${Date.now() - now}ms` }))
-      );
+      .pipe(map((data) => ({ data, stint: `${Date.now() - now}ms` })));
   }
 }

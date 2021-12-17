@@ -8,12 +8,13 @@ import { IRequestWithUser } from '../auth/interfaces/request-with-user.interface
 export class EmailConfirmationController {
   constructor(
     private readonly emailConfirmationService: EmailConfirmationService,
-  ) {
-  }
+  ) {}
 
   @Post('confirm')
   public async confirm(@Body() { token }: EmailConfirmationDto) {
-    const email = await this.emailConfirmationService.decodeConfirmationToken(token);
+    const email = await this.emailConfirmationService.decodeConfirmationToken(
+      token,
+    );
     await this.emailConfirmationService.confirmEmail(email);
   }
 

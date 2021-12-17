@@ -8,24 +8,31 @@ import { Request } from 'express';
 import { ITokenPayload } from '../interfaces/token-payload.interface';
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-token') {
-
+export class JwtRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh-token',
+) {
   constructor(
     @Inject(authConfig.KEY)
     private readonly configService: ConfigType<typeof authConfig>,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
-        return req?.cookies?.Refresh;
-      }]),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req: Request) => {
+          return req?.cookies?.Refresh;
+        },
+      ]),
       secretOrKey: configService.jwtRefreshTokenSecret,
-      passReqToCallback: true
+      passReqToCallback: true,
     });
   }
 
   public async validate(request: Request, payload: ITokenPayload) {
     const refreshToken = request?.cookies?.Refresh;
-    return this.userService.findUserIfRefreshTokenMatches(refreshToken, payload.userId);
+    return this.userService.findUserIfRefreshTokenMatches(
+      refreshToken,
+      payload.userId,
+    );
   }
 }

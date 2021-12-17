@@ -16,24 +16,28 @@ export class PrivateFileService {
     @InjectRepository(PrivateFile)
     private readonly privateFileRepository: Repository<PrivateFile>,
     @Inject(awsConfig.KEY)
-    private readonly configService: ConfigType<typeof awsConfig>
-  ) {
-  }
+    private readonly configService: ConfigType<typeof awsConfig>,
+  ) {}
 
-  public async uploadPrivateFile(createFileDto: CreateFileDto, ownerId: number): Promise<PrivateFile> {
+  public async uploadPrivateFile(
+    createFileDto: CreateFileDto,
+    ownerId: number,
+  ): Promise<PrivateFile> {
     const s3 = new S3();
 
-    const uploadResult = await s3.upload({
-      Bucket: this.configService.awsUserPrivateBucketName,
-      Body: createFileDto.buffer,
-      Key: `${uuid()}-${createFileDto.filename}`
-    }).promise();
+    const uploadResult = await s3
+      .upload({
+        Bucket: this.configService.awsUserPrivateBucketName,
+        Body: createFileDto.buffer,
+        Key: `${uuid()}-${createFileDto.filename}`,
+      })
+      .promise();
 
     const newFile = this.privateFileRepository.create({
       key: uploadResult.Key,
       owner: {
-        id: ownerId
-      }
+        id: ownerId,
+      },
     });
 
     return this.privateFileRepository.save(newFile);
@@ -42,21 +46,26 @@ export class PrivateFileService {
   public async getPrivateFile(fileId: number): Promise<IPrivateFileRO> {
     const s3 = new S3();
 
-    const fileInfo = await this.privateFileRepository.findOne({ id: fileId }, { relations: ['owner'] });
+    const fileInfo = await this.privateFileRepository.findOne(
+      { id: fileId },
+      { relations: ['owner'] },
+    );
 
     if (!fileInfo) {
       throw new NotFoundException(`File with such id has not been found!`);
     }
 
-    const stream = await s3.getObject({
-      Bucket: this.configService.awsUserPrivateBucketName,
-      Key: fileInfo.key
-    }).createReadStream();
+    const stream = await s3
+      .getObject({
+        Bucket: this.configService.awsUserPrivateBucketName,
+        Key: fileInfo.key,
+      })
+      .createReadStream();
 
     return {
       stream,
-      info: fileInfo
-    }
+      info: fileInfo,
+    };
   }
 
   public async generatePrivateUrl(key: string): Promise<string> {
@@ -65,8 +74,7 @@ export class PrivateFileService {
     return s3.getSignedUrlPromise('getObject', {
       Bucket: this.configService.awsUserPrivateBucketName,
       Key: key,
-      Expires: this.configService.awsPrivateFileUrlExpireTime // in seconds
+      Expires: this.configService.awsPrivateFileUrlExpireTime, // in seconds
     });
-
   }
 }

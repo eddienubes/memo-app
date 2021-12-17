@@ -11,8 +11,8 @@ import { ConfigService } from '@nestjs/config';
 import { mockedConfigService } from './mocks/config.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MetadataInterceptor } from '../src/common/interceptors/metadata.interceptor';
-import * as cookieParser from 'cookie-parser';
-import * as request from 'supertest'
+import cookieParser from 'cookie-parser';
+import request from 'supertest';
 import { getManager } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -22,18 +22,14 @@ describe('AuthController', () => {
   let userRepository;
 
   beforeEach(async () => {
-    userData = plainToClass(
-      User,
-      mockedUser,
-      {
-        ignoreDecorators: true
-      }
-    );
+    userData = plainToClass(User, mockedUser, {
+      ignoreDecorators: true,
+    });
 
     userRepository = {
       create: jest.fn().mockResolvedValue(userData),
       save: jest.fn().mockResolvedValue(userData),
-      findOne: jest.fn().mockResolvedValue(undefined)
+      findOne: jest.fn().mockResolvedValue(undefined),
     };
 
     const module = await Test.createTestingModule({
@@ -43,25 +39,27 @@ describe('AuthController', () => {
         UserService,
         {
           provide: JwtService,
-          useValue: mockedJwtService
+          useValue: mockedJwtService,
         },
         {
           provide: ConfigService,
-          useValue: mockedConfigService
+          useValue: mockedConfigService,
         },
         {
           provide: getRepositoryToken(User),
-          useValue: userRepository
-        }
-      ]
+          useValue: userRepository,
+        },
+      ],
     }).compile();
 
     app = module.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     // app.useGlobalInterceptors(new MetadataInterceptor());
     app.use(cookieParser());
 
@@ -84,7 +82,7 @@ describe('AuthController', () => {
           .send({
             email: mockedUser.email,
             username: mockedUser.username,
-            password: mockedUser.password
+            password: mockedUser.password,
           })
           .expect(201)
           .expect(expectedData);
@@ -100,7 +98,7 @@ describe('AuthController', () => {
         return request(app.getHttpServer())
           .post('/auth/signup')
           .send({
-            name: mockedUser.username
+            name: mockedUser.username,
           })
           .expect(400);
       });

@@ -3,25 +3,27 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { authConfig } from '../../common/config/auth-config';
 import { ConfigType } from '@nestjs/config';
-import {Request} from 'express';
+import { Request } from 'express';
 import { ITokenPayload } from '../interfaces/token-payload.interface';
 import { UserService } from '../../user/services/user.service';
 
 @Injectable()
 export class JwtTwoFactorStrategy extends PassportStrategy(
   Strategy,
-  'two-factor-jwt'
+  'two-factor-jwt',
 ) {
   constructor(
     @Inject(authConfig.KEY)
     private readonly configService: ConfigType<typeof authConfig>,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
-        return req?.cookies?.Authentication;
-      }]),
-      secretOrKey: configService.jwtAccessTokenSecret
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req: Request) => {
+          return req?.cookies?.Authentication;
+        },
+      ]),
+      secretOrKey: configService.jwtAccessTokenSecret,
     });
   }
 

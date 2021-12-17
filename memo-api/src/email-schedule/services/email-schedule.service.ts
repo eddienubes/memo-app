@@ -8,9 +8,8 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 export class EmailScheduleService {
   constructor(
     private readonly emailService: EmailService,
-    private readonly schedulerRegistry: SchedulerRegistry
-  ) {
-  }
+    private readonly schedulerRegistry: SchedulerRegistry,
+  ) {}
 
   scheduleEmail(emailScheduleDto: EmailScheduleRecordDto) {
     const date = new Date(emailScheduleDto.date);
@@ -19,11 +18,14 @@ export class EmailScheduleService {
       await this.emailService.sendMail({
         to: emailScheduleDto.recipient,
         subject: emailScheduleDto.subject,
-        text: emailScheduleDto.content
+        text: emailScheduleDto.content,
       });
     });
 
-    this.schedulerRegistry.addCronJob(`${Date.now()}-${emailScheduleDto.subject}`, job);
+    this.schedulerRegistry.addCronJob(
+      `${Date.now()}-${emailScheduleDto.subject}`,
+      job,
+    );
 
     job.start();
   }

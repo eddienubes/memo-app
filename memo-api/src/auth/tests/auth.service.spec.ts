@@ -18,17 +18,17 @@ describe('AuthService', () => {
         UserService,
         {
           provide: getRepositoryToken(User),
-          useValue: {}
+          useValue: {},
         },
         {
           provide: ConfigService,
-          useValue: mockedConfigService
+          useValue: mockedConfigService,
         },
         {
           provide: JwtService,
-          useValue: mockedJwtService
-        }
-      ]
+          useValue: mockedJwtService,
+        },
+      ],
     }).compile();
 
     authService = await module.get<AuthService>(AuthService);
@@ -37,9 +37,9 @@ describe('AuthService', () => {
   describe('when creating a cookie', () => {
     it('should return a string', () => {
       const userId = 1;
-      expect(
-        typeof authService.getCookieWithJwtAccessToken(userId)
-      ).toEqual('string');
+      expect(typeof authService.getCookieWithJwtAccessToken(userId)).toEqual(
+        'string',
+      );
     });
   });
 });

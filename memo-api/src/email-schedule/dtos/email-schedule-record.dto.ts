@@ -1,5 +1,10 @@
-import { IsDate, IsDateString, IsEmail, IsNotEmpty, IsString } from 'class-validator';
-
+import {
+  IsDate,
+  IsDateString,
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
 
 export class EmailScheduleRecordDto {
   @IsEmail()
@@ -16,4 +21,3 @@ export class EmailScheduleRecordDto {
   @IsDateString()
   date: string;
 }
-

@@ -1,10 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Test } from './test.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity('answer')
 export class Answer {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -19,11 +24,11 @@ export class Answer {
   @Column({ nullable: true })
   testId: number;
 
-  @ManyToOne(() => Test, test => test.answers, {
-    onDelete: 'CASCADE'
+  @ManyToOne(() => Test, (test) => test.answers, {
+    onDelete: 'CASCADE',
   })
   @JoinColumn({
-    name: 'testId'
+    name: 'testId',
   })
-  test: Test
+  test: Test;
 }

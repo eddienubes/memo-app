@@ -7,7 +7,7 @@ interface IAwsConfig {
   awsSecretAccessKey: string;
   awsUserAvatarsBucketName: string;
   awsUserPrivateBucketName: string;
-  awsPrivateFileUrlExpireTime: number
+  awsPrivateFileUrlExpireTime: number;
 }
 
 export const AWS_CONFIG_TOKEN = 'aws-config';
@@ -18,9 +18,8 @@ export const awsConfigSchema = Joi.object({
   AWS_SECRET_ACCESS_KEY: Joi.string().required(),
   AWS_USER_AVATARS_BUCKET_NAME: Joi.string().required(),
   AWS_USER_PRIVATE_BUCKET_NAME: Joi.string().required(),
-  AWS_PRIVATE_FILE_URL_EXPIRE_TIME: Joi.number().required()
+  AWS_PRIVATE_FILE_URL_EXPIRE_TIME: Joi.number().required(),
 });
-
 
 export const awsConfig = registerAs(AWS_CONFIG_TOKEN, () => {
   const config: IAwsConfig = {
@@ -29,7 +28,7 @@ export const awsConfig = registerAs(AWS_CONFIG_TOKEN, () => {
     awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     awsUserAvatarsBucketName: process.env.AWS_USER_AVATARS_BUCKET_NAME,
     awsUserPrivateBucketName: process.env.AWS_USER_PRIVATE_BUCKET_NAME,
-    awsPrivateFileUrlExpireTime: +process.env.AWS_PRIVATE_FILE_URL_EXPIRE_TIME
-  }
+    awsPrivateFileUrlExpireTime: +process.env.AWS_PRIVATE_FILE_URL_EXPIRE_TIME,
+  };
   return config;
 });

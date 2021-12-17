@@ -6,7 +6,6 @@ import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { EmailManagerService } from './services/email-manager.service';
 import { EMAIL_MANAGER_TOKEN } from '../utils/constants';
 
-
 @Module({
   imports: [ConfigModule.forFeature(emailManagerConfig)],
   controllers: [EmailManagerController],
@@ -21,12 +20,11 @@ import { EMAIL_MANAGER_TOKEN } from '../utils/constants';
             host: configService.host,
             port: configService.port,
           },
-        })
-      }
+        });
+      },
     },
     EmailManagerService,
   ],
   exports: [EMAIL_MANAGER_TOKEN],
 })
-export class EmailManagerModule {
-}
+export class EmailManagerModule {}

@@ -14,36 +14,41 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
     @Inject(authConfig.KEY)
-    private readonly configService: ConfigType<typeof authConfig>
-  ) {
-  }
+    private readonly configService: ConfigType<typeof authConfig>,
+  ) {}
 
   public getCookieForSignOut() {
     return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
   }
 
-  public getCookieWithJwtAccessToken(userId: number, isTwoFactorAuthEnabled = false): string {
+  public getCookieWithJwtAccessToken(
+    userId: number,
+    isTwoFactorAuthEnabled = false,
+  ): string {
     const payload: ITokenPayload = { userId, isTwoFactorAuthEnabled };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.jwtAccessTokenSecret,
-      expiresIn: this.configService.jwtAccessTokenExpirationTime
+      expiresIn: this.configService.jwtAccessTokenExpirationTime,
     });
 
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.jwtAccessTokenExpirationTime}`
+    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.jwtAccessTokenExpirationTime}`;
   }
 
-  public getCookieWithJwtRefreshToken(userId: number): { cookie: string, token: string } {
+  public getCookieWithJwtRefreshToken(userId: number): {
+    cookie: string;
+    token: string;
+  } {
     const payload: ITokenPayload = { userId };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.jwtRefreshTokenSecret,
-      expiresIn: this.configService.jwtRefreshTokenExpirationTime
+      expiresIn: this.configService.jwtRefreshTokenExpirationTime,
     });
 
     const cookie = `Refresh=${token}; HttpOnly; Path=/auth/refresh; Max-Age=${this.configService.jwtRefreshTokenExpirationTime}`;
     return {
       cookie,
-      token
-    }
+      token,
+    };
   }
 
   public async register(registerDto: RegisterDto): Promise<User> {
@@ -51,14 +56,16 @@ export class AuthService {
 
     const user = await this.userService.create({
       ...registerDto,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     return user;
   }
 
-
-  public async getAuthenticatedUser(email: string, plainTextPassword: string): Promise<User> {
+  public async getAuthenticatedUser(
+    email: string,
+    plainTextPassword: string,
+  ): Promise<User> {
     try {
       const user = await this.userService.findByEmail(email);
 
@@ -70,16 +77,17 @@ export class AuthService {
     }
   }
 
-  private async verifyPassword(plainTextPassword: string, hashedPassword: string): Promise<void> {
+  private async verifyPassword(
+    plainTextPassword: string,
+    hashedPassword: string,
+  ): Promise<void> {
     const isPasswordMatching = await bcrypt.compare(
       plainTextPassword,
-      hashedPassword
+      hashedPassword,
     );
 
     if (!isPasswordMatching) {
       throw new BadRequestException(`Email or password is incorrect!`);
     }
   }
-
-
 }

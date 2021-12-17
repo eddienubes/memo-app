@@ -6,6 +6,6 @@ import { emailConfig } from '../common/config/email-config';
 @Module({
   imports: [ConfigModule.forFeature(emailConfig)],
   providers: [EmailService],
-  exports: [EmailService]
+  exports: [EmailService],
 })
 export class EmailModule {}

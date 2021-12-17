@@ -26,15 +26,15 @@ export class TwoFactorAuthController {
     private readonly twoFactorAuthService: TwoFactorAuthService,
     private readonly userService: UserService,
     private readonly authService: AuthService,
-  ) {
-  }
+  ) {}
 
   @Post('generate')
   @HttpCode(200)
   @UseGuards(JwtTwoFactorGuard)
   @Header('content-type', 'image/png')
   public async generate(@Res() res: Response, @Req() req: IRequestWithUser) {
-    const { otpAuthUrl } = await this.twoFactorAuthService.generateTwoFactorAuthSecret(req.user);
+    const { otpAuthUrl } =
+      await this.twoFactorAuthService.generateTwoFactorAuthSecret(req.user);
 
     return this.twoFactorAuthService.pipeQrCodeStream(res, otpAuthUrl);
   }
@@ -46,7 +46,10 @@ export class TwoFactorAuthController {
     @Req() req: IRequestWithUser,
     @Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto,
   ) {
-    const isCodeValid = this.twoFactorAuthService.validateTwoFactorAuthCode(twoFactorAuthCode, req.user);
+    const isCodeValid = this.twoFactorAuthService.validateTwoFactorAuthCode(
+      twoFactorAuthCode,
+      req.user,
+    );
 
     if (!isCodeValid) {
       throw new UnauthorizedException(`Wrong authentication code`);
@@ -64,13 +67,19 @@ export class TwoFactorAuthController {
     @Res({ passthrough: true }) res: Response,
     @Body() { twoFactorAuthCode }: TwoFactorAuthCodeDto,
   ) {
-    const isCodeValid = this.twoFactorAuthService.validateTwoFactorAuthCode(twoFactorAuthCode, req.user);
+    const isCodeValid = this.twoFactorAuthService.validateTwoFactorAuthCode(
+      twoFactorAuthCode,
+      req.user,
+    );
 
     if (!isCodeValid) {
       throw new UnauthorizedException(`Two factor auth code is invalid`);
     }
 
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(req.user.id, true);
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
+      req.user.id,
+      true,
+    );
 
     res.setHeader('Set-Cookie', [accessTokenCookie]);
 

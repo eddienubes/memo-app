@@ -10,7 +10,7 @@ export interface IPhraseSearchBody {
 
 export interface IPhraseSearchResult {
   hits: {
-    total: number,
+    total: number;
     hits: Array<{
       _source: IPhraseSearchBody;
     }>;

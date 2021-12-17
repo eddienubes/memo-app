@@ -16,9 +16,9 @@ describe('UserService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: {
-            findOne
-          }
-        }
+            findOne,
+          },
+        },
       ],
     }).compile();
 
@@ -39,7 +39,9 @@ describe('UserService', () => {
       });
 
       it('should return the user', async () => {
-        const fetchedUser = await userService.findByEmail('testemail.@emaiasd./coqwe');
+        const fetchedUser = await userService.findByEmail(
+          'testemail.@emaiasd./coqwe',
+        );
         expect(fetchedUser).toEqual(user);
       });
     });
@@ -50,8 +52,10 @@ describe('UserService', () => {
       });
 
       it('should throw an error', async () => {
-        await expect(userService.findByEmail('qweqwqe@.qwmeas.com')).rejects.toThrow();
+        await expect(
+          userService.findByEmail('qweqwqe@.qwmeas.com'),
+        ).rejects.toThrow();
       });
     });
-  })
+  });
 });

@@ -7,7 +7,7 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-  Unique
+  Unique,
 } from 'typeorm';
 import { Example } from '../../example/entities/example.entity';
 import { User } from '../../user/entities/user.entity';
@@ -19,7 +19,7 @@ export enum PhraseType {
   ADVERB = 'ADVERB',
   ADJECTIVE = 'ADJECTIVE',
   VERB = 'VERB',
-  GENERAL = 'GENERAL'
+  GENERAL = 'GENERAL',
 }
 
 @Entity('phrase')
@@ -35,29 +35,29 @@ export class Phrase {
   @Column({
     type: 'enum',
     enum: PhraseType,
-    default: PhraseType.GENERAL
+    default: PhraseType.GENERAL,
   })
-  type: PhraseType
+  type: PhraseType;
 
   @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
   @Exclude()
-  @OneToOne(() => Definition, definition => definition.phrase)
+  @OneToOne(() => Definition, (definition) => definition.phrase)
   definition: Definition;
 
   @Exclude()
-  @OneToMany(() => Example, example => example.phrase)
-  examples: Example[]
+  @OneToMany(() => Example, (example) => example.phrase)
+  examples: Example[];
 
   @Column({ nullable: false })
   userId: number;
 
-  @ManyToOne(() => User, user => user.phrases, {
+  @ManyToOne(() => User, (user) => user.phrases, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({
     name: 'userId',
   })
-  user: User
+  user: User;
 }

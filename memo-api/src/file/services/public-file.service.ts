@@ -16,21 +16,24 @@ export class PublicFileService {
     private readonly fileRepository: Repository<PublicFile>,
     @Inject(awsConfig.KEY)
     private readonly configService: ConfigType<typeof awsConfig>,
-  ) {
-  }
+  ) {}
 
-  public async uploadPublicFile(createFileDto: CreateFileDto): Promise<PublicFile> {
+  public async uploadPublicFile(
+    createFileDto: CreateFileDto,
+  ): Promise<PublicFile> {
     const s3 = new S3();
 
-    const uploadResult = await s3.upload({
-      Bucket: this.configService.awsUserAvatarsBucketName,
-      Body: createFileDto.buffer,
-      Key: `${uuid()}-${createFileDto.filename}`
-    }).promise();
+    const uploadResult = await s3
+      .upload({
+        Bucket: this.configService.awsUserAvatarsBucketName,
+        Body: createFileDto.buffer,
+        Key: `${uuid()}-${createFileDto.filename}`,
+      })
+      .promise();
 
     const newFile = this.fileRepository.create({
       key: uploadResult.Key,
-      url: uploadResult.Location
+      url: uploadResult.Location,
     });
 
     return this.fileRepository.save(newFile);
@@ -41,28 +44,34 @@ export class PublicFileService {
 
     const s3 = new S3();
 
-    await s3.deleteObject({
-      Bucket: this.configService.awsUserAvatarsBucketName,
-      Key: file.key
-    }).promise();
+    await s3
+      .deleteObject({
+        Bucket: this.configService.awsUserAvatarsBucketName,
+        Key: file.key,
+      })
+      .promise();
 
     await this.fileRepository.delete(fileId);
 
     return file;
   }
 
-  public async deletePublicFileWithQueryRunner(fileId: number, queryRunner: QueryRunner): Promise<PublicFile> {
+  public async deletePublicFileWithQueryRunner(
+    fileId: number,
+    queryRunner: QueryRunner,
+  ): Promise<PublicFile> {
     const file = await this.findOne(fileId);
 
     const s3 = new S3();
 
-    await s3.deleteObject({
-      Bucket: this.configService.awsUserAvatarsBucketName,
-      Key: file.key
-    }).promise();
+    await s3
+      .deleteObject({
+        Bucket: this.configService.awsUserAvatarsBucketName,
+        Key: file.key,
+      })
+      .promise();
 
     await queryRunner.manager.delete(PublicFile, fileId);
-
 
     return file;
   }
@@ -76,5 +85,4 @@ export class PublicFileService {
 
     return file;
   }
-
 }

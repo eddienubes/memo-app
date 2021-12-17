@@ -7,15 +7,18 @@ import { DeepPartial, Repository } from 'typeorm';
 export class DefinitionService {
   constructor(
     @InjectRepository(Definition)
-    private readonly definitionRepository: Repository<Definition>
-  ) {
-  }
+    private readonly definitionRepository: Repository<Definition>,
+  ) {}
 
   public async update(definition: DeepPartial<Definition>) {
-    const definitionPreload = await this.definitionRepository.preload(definition);
+    const definitionPreload = await this.definitionRepository.preload(
+      definition,
+    );
 
     if (!definitionPreload) {
-      throw new NotFoundException(`Cannot update definition, that does not exists for such phrase`);
+      throw new NotFoundException(
+        `Cannot update definition, that does not exists for such phrase`,
+      );
     }
 
     return this.definitionRepository.save(definitionPreload);

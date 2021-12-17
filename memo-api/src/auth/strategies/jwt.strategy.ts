@@ -9,17 +9,19 @@ import { ITokenPayload } from '../interfaces/token-payload.interface';
 import { User } from '../../user/entities/user.entity';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     @Inject(authConfig.KEY)
     private readonly configService: ConfigType<typeof authConfig>,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
-        return request?.cookies?.Authentication;
-      }]),
-      secretOrKey: configService.jwtAccessTokenSecret
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => {
+          return request?.cookies?.Authentication;
+        },
+      ]),
+      secretOrKey: configService.jwtAccessTokenSecret,
     });
   }
 

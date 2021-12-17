@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { RegisterDto } from '../dtos/register.dto';
 import { LocalAuthenticationGuard } from '../guards/local-authentication.guard';
@@ -21,8 +31,7 @@ export class AuthController {
     private readonly userService: UserService,
     private readonly googleAuthService: GoogleAuthService,
     private readonly emailConfirmationService: EmailConfirmationService,
-  ) {
-  }
+  ) {}
 
   @UseInterceptors(CleanupInterceptor)
   @Post('signup')
@@ -36,10 +45,14 @@ export class AuthController {
   @UseInterceptors(CleanupInterceptor)
   @UseGuards(LocalAuthenticationGuard)
   @Post('signin')
-  async signIn(@Req() request: IRequestWithUser, @Res({ passthrough: true }) response: Response): Promise<User | void> {
+  async signIn(
+    @Req() request: IRequestWithUser,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<User | void> {
     const { user } = request;
     const accessCookie = this.authService.getCookieWithJwtAccessToken(user.id);
-    const { cookie: refreshCookie, token: refreshToken } = this.authService.getCookieWithJwtRefreshToken(user.id);
+    const { cookie: refreshCookie, token: refreshToken } =
+      this.authService.getCookieWithJwtRefreshToken(user.id);
 
     await this.userService.setCurrentRefreshToken(refreshToken, user.id);
 
@@ -56,7 +69,10 @@ export class AuthController {
   @UseInterceptors(CleanupInterceptor)
   @UseGuards(JwtTwoFactorGuard)
   @Post('signout')
-  signOut(@Req() req: IRequestWithUser, @Res({ passthrough: true }) res: Response): void {
+  signOut(
+    @Req() req: IRequestWithUser,
+    @Res({ passthrough: true }) res: Response,
+  ): void {
     res.setHeader('Set-Cookie', this.authService.getCookieForSignOut());
     return;
   }
@@ -70,20 +86,25 @@ export class AuthController {
 
   @UseGuards(JwtTwoFactorGuard)
   @Get('refresh')
-  refresh(@Req() req: IRequestWithUser, @Res({ passthrough: true }) res: Response): User {
-    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(req.user.id);
+  refresh(
+    @Req() req: IRequestWithUser,
+    @Res({ passthrough: true }) res: Response,
+  ): User {
+    const accessTokenCookie = this.authService.getCookieWithJwtAccessToken(
+      req.user.id,
+    );
 
     res.setHeader('Set-Cookie', accessTokenCookie);
     return req.user;
   }
 
   @Post('google')
-  public async authenticateWithGoogle(@Body() tokenData: TokenVerificationDto, @Res({ passthrough: true }) res: Response) {
-    const {
-      accessTokenCookie,
-      refreshTokenCookie,
-      user,
-    } = await this.googleAuthService.authenticate(tokenData.token);
+  public async authenticateWithGoogle(
+    @Body() tokenData: TokenVerificationDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessTokenCookie, refreshTokenCookie, user } =
+      await this.googleAuthService.authenticate(tokenData.token);
 
     res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
 
@@ -93,5 +114,4 @@ export class AuthController {
 
     return user;
   }
-
 }

@@ -22,23 +22,19 @@ import { IRequestWithUser } from '../auth/interfaces/request-with-user.interface
 import { CreateExampleDto } from '../example/dtos/create-example.dto';
 import { PhraseType } from './entities/phrase.entity';
 import { JwtTwoFactorGuard } from '../auth/guards/jwt-two-factor-guard.service';
-import { RolesGuard } from '../common/guards/roles.guard';
-import { RolesMetadata } from '../common/decorators/roles.decorator';
-import { Roles } from '../user/entities/user.entity';
 
 @Controller('phrase')
 @UseInterceptors(CacheInterceptor)
 export class PhraseController {
-
-  constructor(
-    private readonly phrasesService: PhraseService,
-  ) {
-  }
+  constructor(private readonly phrasesService: PhraseService) {}
 
   @UseGuards(JwtTwoFactorGuard)
   @UseInterceptors(CacheInterceptor)
   @Get()
-  findAll(@Query() paginationQuery: PaginationQueryDto, @Req() req: IRequestWithUser) {
+  findAll(
+    @Query() paginationQuery: PaginationQueryDto,
+    @Req() req: IRequestWithUser,
+  ) {
     return this.phrasesService.findAll(paginationQuery, req.user.id);
   }
 
@@ -52,16 +48,20 @@ export class PhraseController {
   @Get('search')
   search(@Query('by') by: string, @Req() req: IRequestWithUser) {
     if (!by) {
-      return this.phrasesService.findAll({ limit: undefined, offset: undefined }, req.user.id);
+      return this.phrasesService.findAll(
+        { limit: undefined, offset: undefined },
+        req.user.id,
+      );
     }
     return this.phrasesService.searchForPhrases(by, req.user.id);
   }
 
-  @UseGuards(JwtTwoFactorGuard, RolesGuard)
-  // @UseGuards(JwtTwoFactorGuard)
-  @RolesMetadata(Roles.ADMIN)
+  @UseGuards(JwtTwoFactorGuard)
   @Post()
-  create(@Body() createPhraseDto: CreatePhraseDto, @Req() req: IRequestWithUser) {
+  create(
+    @Body() createPhraseDto: CreatePhraseDto,
+    @Req() req: IRequestWithUser,
+  ) {
     return this.phrasesService.create(createPhraseDto, req.user.id);
   }
 
@@ -73,13 +73,25 @@ export class PhraseController {
 
   @UseGuards(JwtTwoFactorGuard)
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updatePhraseDto: UpdatePhraseDto, @Req() req: IRequestWithUser) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePhraseDto: UpdatePhraseDto,
+    @Req() req: IRequestWithUser,
+  ) {
     return this.phrasesService.updatePhrase(id, updatePhraseDto, req.user.id);
   }
 
   @UseGuards(JwtTwoFactorGuard)
   @Post(':pid/example')
-  createExample(@Param('pid', ParseIntPipe) phraseId: number, @Body() createExampleDto: CreateExampleDto, @Req() req: IRequestWithUser) {
-    return this.phrasesService.createExample(phraseId, createExampleDto, req.user.id);
+  createExample(
+    @Param('pid', ParseIntPipe) phraseId: number,
+    @Body() createExampleDto: CreateExampleDto,
+    @Req() req: IRequestWithUser,
+  ) {
+    return this.phrasesService.createExample(
+      phraseId,
+      createExampleDto,
+      req.user.id,
+    );
   }
 }

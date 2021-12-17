@@ -12,10 +12,10 @@ import { UserModule } from '../user/user.module';
     ConfigModule.forFeature(authConfig),
     JwtModule.register({}),
     EmailModule,
-    UserModule
+    UserModule,
   ],
   controllers: [EmailConfirmationController],
   providers: [EmailConfirmationService],
-  exports: [EmailConfirmationService]
+  exports: [EmailConfirmationService],
 })
 export class EmailConfirmationModule {}

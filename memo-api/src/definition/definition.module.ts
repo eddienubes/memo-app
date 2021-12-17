@@ -8,6 +8,6 @@ import { Definition } from './entities/definition.entity';
   imports: [TypeOrmModule.forFeature([Definition])],
   controllers: [DefinitionController],
   providers: [DefinitionService],
-  exports: [DefinitionService]
+  exports: [DefinitionService],
 })
 export class DefinitionModule {}

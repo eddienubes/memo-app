@@ -6,10 +6,7 @@ import { JwtTwoFactorGuard } from '../auth/guards/jwt-two-factor-guard.service';
 
 @Controller('email-schedule')
 export class EmailScheduleController {
-  constructor(
-    private readonly emailScheduleService: EmailScheduleService
-  ) {
-  }
+  constructor(private readonly emailScheduleService: EmailScheduleService) {}
 
   @Post('schedule')
   @UseGuards(JwtTwoFactorGuard)

@@ -13,17 +13,15 @@ export class EmailConfirmationService {
     private readonly authConfigService: ConfigType<typeof authConfig>,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
-    private readonly userService: UserService
-  ) {
-  }
-
+    private readonly userService: UserService,
+  ) {}
 
   public async sendVerificationLink(email: string) {
     const payload: IVerificationTokenPayload = { email };
 
     const token = this.jwtService.sign(payload, {
       secret: this.authConfigService.jwtVerificationTokenSecret,
-      expiresIn: this.authConfigService.jwtVerificationTokenExpirationTime
+      expiresIn: this.authConfigService.jwtVerificationTokenExpirationTime,
     });
 
     const url = `${this.authConfigService.emailConfirmationUrl}?token=${token}`;
@@ -33,7 +31,7 @@ export class EmailConfirmationService {
     return this.emailService.sendMail({
       to: email,
       subject: 'Memo Email Confirmation',
-      text
+      text,
     });
   }
 
@@ -50,7 +48,7 @@ export class EmailConfirmationService {
   public async decodeConfirmationToken(token: string) {
     try {
       const payload = await this.jwtService.verify(token, {
-        secret: this.authConfigService.jwtVerificationTokenSecret
+        secret: this.authConfigService.jwtVerificationTokenSecret,
       });
 
       if (typeof payload === 'object' && 'email' in payload) {

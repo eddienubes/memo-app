@@ -24,14 +24,13 @@ describe('AuthService integration with UserService', () => {
     (bcrypt.compare as jest.Mock) = bcryptCompare;
 
     userData = {
-      ...mockedUser
+      ...mockedUser,
     };
 
     findUser = jest.fn().mockResolvedValue(userData);
     const userRepository = {
-      findOne: findUser
+      findOne: findUser,
     };
-
 
     const module = await Test.createTestingModule({
       providers: [
@@ -39,17 +38,17 @@ describe('AuthService integration with UserService', () => {
         AuthService,
         {
           provide: ConfigService,
-          useValue: mockedConfigService
+          useValue: mockedConfigService,
         },
         {
           provide: JwtService,
-          useValue: mockedJwtService
+          useValue: mockedJwtService,
         },
         {
           provide: getRepositoryToken(User),
-          useValue: userRepository
-        }
-      ]
+          useValue: userRepository,
+        },
+      ],
     }).compile();
 
     authService = await module.get<AuthService>(AuthService);
@@ -63,14 +62,12 @@ describe('AuthService integration with UserService', () => {
       });
 
       it('should throw an error', async () => {
-        await (
-          expect(
-            authService
-              .getAuthenticatedUser('asdasdasd@asd,ka/cjqwe', 'asdqwdasdazxc')
-          )
-            .rejects
-            .toThrow()
-        );
+        await expect(
+          authService.getAuthenticatedUser(
+            'asdasdasd@asd,ka/cjqwe',
+            'asdqwdasdazxc',
+          ),
+        ).rejects.toThrow();
       });
     });
 
@@ -85,7 +82,10 @@ describe('AuthService integration with UserService', () => {
         });
 
         it('should return the user data', async () => {
-          const user = await authService.getAuthenticatedUser('asdasd', 'asdasda');
+          const user = await authService.getAuthenticatedUser(
+            'asdasd',
+            'asdasda',
+          );
           expect(user).toEqual(userData);
         });
       });
@@ -97,14 +97,10 @@ describe('AuthService integration with UserService', () => {
 
         it('should throw an error', async () => {
           await expect(
-            authService.getAuthenticatedUser('asdasd', 'asdasdasd')
-          )
-            .rejects
-            .toThrow();
+            authService.getAuthenticatedUser('asdasd', 'asdasdasd'),
+          ).rejects.toThrow();
         });
       });
-
     });
-
   });
 });

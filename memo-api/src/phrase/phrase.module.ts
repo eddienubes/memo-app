@@ -15,11 +15,10 @@ import { RedisModule } from '../redis/redis.module';
     ExampleModule,
     DefinitionModule,
     SearchModule,
-    RedisModule
+    RedisModule,
   ],
   controllers: [PhraseController],
   providers: [PhraseService, PhraseSearchService],
-  exports: [PhraseService]
+  exports: [PhraseService],
 })
-export class PhraseModule {
-}
+export class PhraseModule {}
