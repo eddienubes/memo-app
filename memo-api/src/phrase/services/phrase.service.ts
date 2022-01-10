@@ -87,7 +87,7 @@ export class PhraseService {
 
     const result = await this.phraseRepository.save(phrase);
 
-    // await this.phraseSearchService.indexPhrase(result);
+    await this.phraseSearchService.indexPhrase(result);
 
     return result;
   }
@@ -117,6 +117,7 @@ export class PhraseService {
   public async remove(id: number, userId: number): Promise<Phrase> {
     const phrase = await this.findById(id, userId);
     const result = await this.phraseRepository.remove(phrase);
+    await this.phraseSearchService.remove(phrase.id);
     return {
       ...result,
       id,
@@ -141,7 +142,7 @@ export class PhraseService {
       type: updatePhraseDtp.type,
     });
 
-    // await this.phraseSearchService.update(updatedPhrase);
+    await this.phraseSearchService.update(updatedPhrase);
 
     return {
       ...updatedPhrase,

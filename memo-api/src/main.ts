@@ -12,6 +12,7 @@ import { MetadataInterceptor } from './common/interceptors/metadata.interceptor'
 import { config } from 'aws-sdk';
 import { AWS_CONFIG_TOKEN, awsConfig } from './common/config/aws-config';
 import { runInCluster } from './utils/run-in-cluster';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -45,6 +46,15 @@ async function bootstrap() {
     secretAccessKey: awsConf.awsSecretAccessKey,
     region: awsConf.awsRegion,
   });
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Memo')
+    .setDescription('Memo api description')
+    .setVersion('1.0')
+    .addTag('Memo')
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(serverConf.port);
 }

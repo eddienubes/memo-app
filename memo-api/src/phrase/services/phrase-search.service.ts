@@ -37,8 +37,8 @@ export class PhraseSearchService {
             bool: {
               must: [
                 {
-                  multi_match: {
-                    query: text,
+                  query_string: {
+                    query: `*${text}*`,
                     fields: ['value', 'definition', 'type'],
                   },
                 },
